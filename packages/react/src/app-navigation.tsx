@@ -12,6 +12,10 @@ export const navigation = [
         text: 'Contact Details',
         path: '/crm-contact-details',
       },
+      {
+        text: 'Employee',
+        path: '/employee',
+      },
     ],
   },
   {

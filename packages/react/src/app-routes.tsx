@@ -13,6 +13,7 @@ import {
   UserProfile
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
+import { Employee } from './pages/dna/sample/employee/employee';
 
 const routes = [
   {
@@ -62,6 +63,10 @@ const routes = [
   {
     path: '/user-profile',
     element: UserProfile,
+  },
+  {
+    path: '/employee',
+    element: Employee,
   },
 ];
 

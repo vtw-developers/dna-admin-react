@@ -1,0 +1,34 @@
+type Query {
+    employees(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): EmployeePage
+    employee(id: ID): Employee
+}
+
+type Mutation {
+    createEmployee(employee: EmployeeInput): Employee
+    updateEmployee(employee: EmployeeInput): Employee
+    deleteEmployee(id: ID): Employee
+}
+
+type Employee {
+    id: ID
+    name: String
+    gender: Gender
+    birthDate: Date
+}
+
+input EmployeeInput {
+    id: ID
+    name: String
+    gender: Gender
+    birthDate: Date
+}
+
+enum Gender {
+    Male,
+    Female
+}
+
+type EmployeePage {
+    totalElements: Int
+    content: [Employee]
+}
