@@ -8,6 +8,10 @@ export const navigation = [
         text: '직원 관리',
         path: '/employee',
       },
+      {
+        text: '애플리케이션',
+        path: '/application',
+      },
     ],
   },
   {
