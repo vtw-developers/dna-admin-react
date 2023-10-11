@@ -38,7 +38,6 @@ export const EmployeeList = () => {
           key: 'id',
           load: (loadOptions) => {
             const pageable = pageableService.getPageable(loadOptions);
-            // pageable.filter = this.filter;
 
             const page$ = apollo
               .query({
@@ -80,10 +79,6 @@ export const EmployeeList = () => {
                 return pageableService.transformPage(page.data.employees);
               });
             return page$;
-            // return firstValueFrom(page$)
-            //     .then((page: any) => {
-            //       return pageableService.transformPage(page.data.employees);
-            //     });
           },
         }),
       })
@@ -117,6 +112,7 @@ export const EmployeeList = () => {
           dataSource={gridDataSource}
           allowColumnReordering
           ref={gridRef}
+          remoteOperations
         >
           <LoadPanel showPane={false} />
           <SearchPanel visible placeholder='검색...' />
@@ -128,7 +124,7 @@ export const EmployeeList = () => {
           />
           <HeaderFilter visible />
           <Sorting mode='multiple' />
-          <Scrolling mode='virtual' />
+          <Scrolling rowRenderingMode='virtual' />
           <Paging defaultPageSize={10} />
           <Pager
             visible
