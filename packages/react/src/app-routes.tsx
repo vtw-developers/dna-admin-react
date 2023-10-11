@@ -1,19 +1,19 @@
 import {
+  AnalyticsDashboard,
+  AnalyticsGeography,
+  AnalyticsSalesReport,
   CRMContactDetails,
   CRMContactList,
   PlanningScheduler,
-  PlanningTaskList,
   PlanningTaskDetails,
-  AnalyticsDashboard,
-  AnalyticsSalesReport,
-  AnalyticsGeography,
+  PlanningTaskList,
+  ResetPasswordPage,
   SignInPage,
   SignUpPage,
-  ResetPasswordPage,
-  UserProfile
+  UserProfile,
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
-import { Employee } from './pages/dna/sample/employee/employee';
+import { EmployeeList } from './pages/dna/sample/employee/employee-list';
 
 const routes = [
   {
@@ -66,7 +66,7 @@ const routes = [
   },
   {
     path: '/employee',
-    element: Employee,
+    element: EmployeeList,
   },
 ];
 

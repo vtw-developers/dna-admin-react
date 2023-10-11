@@ -1,5 +1,16 @@
 export const navigation = [
   {
+    text: '샘플 페이지',
+    icon: 'user',
+    path: '',
+    items: [
+      {
+        text: '직원 관리',
+        path: '/employee',
+      },
+    ],
+  },
+  {
     text: 'CRM',
     icon: 'user',
     path: '',
@@ -11,10 +22,6 @@ export const navigation = [
       {
         text: 'Contact Details',
         path: '/crm-contact-details',
-      },
-      {
-        text: 'Employee',
-        path: '/employee',
       },
     ],
   },
@@ -33,7 +40,7 @@ export const navigation = [
       },
       {
         text: 'Scheduler',
-        path: '/planning-scheduler'
+        path: '/planning-scheduler',
       },
     ],
   },
@@ -72,8 +79,8 @@ export const navigation = [
       {
         text: 'Reset Password Form',
         path: '/reset-password-form',
-      }
-    ]
+      },
+    ],
   },
   {
     text: 'Common',
@@ -83,7 +90,7 @@ export const navigation = [
       {
         text: 'User Profile',
         path: '/user-profile',
-      }
-    ]
+      },
+    ],
   },
 ];

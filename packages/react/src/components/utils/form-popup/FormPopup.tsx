@@ -30,7 +30,7 @@ export const FormPopup = ({
   const validationGroup = useRef<ValidationGroup>(null);
 
   const close = () => {
-    validationGroup.current?.instance.reset();
+    // validationGroup.current?.instance.reset();
     setVisible(false);
   };
 
@@ -39,11 +39,10 @@ export const FormPopup = ({
   }, [close, validationGroup]);
 
   const onSaveClick = useCallback(() => {
-    if (!validationGroup.current?.instance.validate().isValid) return;
-
+    // if (!validationGroup.current?.instance.validate().isValid) return;
     onSave && onSave();
     close();
-  }, [validationGroup]);
+  }, [close, validationGroup]);
 
   return (
     <Popup
