@@ -23,14 +23,21 @@ type Props = {
 export const EmployeeEditPopup = ({
   visible,
   setVisible,
+  onSave,
 }: PropsWithChildren<Props>) => {
-  const [employee, setEmployee] = useState<any>({});
+  const newEmployee: any = {
+    id: undefined,
+    name: '',
+  };
+
+  const [employee, setEmployee] = useState<any>(newEmployee);
 
   const updateField = (field: string) => (value) => {
     setEmployee((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
   const save = useCallback(() => {
+    console.log(employee);
     apollo
       .mutate({
         mutation: gql`
@@ -46,6 +53,7 @@ export const EmployeeEditPopup = ({
       })
       .then((result: any) => {
         console.log(result);
+        onSave && onSave();
       });
   }, []);
 

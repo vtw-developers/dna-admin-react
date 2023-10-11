@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
 import './employee-list.scss';
-
-// import { getContacts } from 'dx-template-gallery-data';
 import DataGrid, {
   Column,
   ColumnChooser,
   HeaderFilter,
   Item,
   LoadPanel,
+  Pager,
+  Paging,
   Scrolling,
   SearchPanel,
   Selection,
@@ -103,6 +102,10 @@ export const EmployeeList = () => {
     gridRef.current?.instance.refresh();
   }, []);
 
+  const onSave = useCallback(() => {
+    refresh();
+  }, []);
+
   return (
     <div className='view crm-contact-list'>
       <div className='view-wrapper view-wrapper-contact-list'>
@@ -126,6 +129,14 @@ export const EmployeeList = () => {
           <HeaderFilter visible />
           <Sorting mode='multiple' />
           <Scrolling mode='virtual' />
+          <Paging defaultPageSize={10} />
+          <Pager
+            visible
+            displayMode='full'
+            showPageSizeSelector
+            showInfo
+            showNavigationButtons
+          />
           <Toolbar>
             <Item location='before'>
               <div className='grid-header'>직원 목록</div>
@@ -167,6 +178,7 @@ export const EmployeeList = () => {
         <EmployeeEditPopup
           visible={popupVisible}
           setVisible={changePopupVisibility}
+          onSave={onSave}
         />
       </div>
     </div>

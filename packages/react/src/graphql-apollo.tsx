@@ -12,9 +12,9 @@ const defaultOptions: DefaultOptions = {
 };
 
 export const apollo = new ApolloClient({
-  uri: 'http://localhost:8070/dna/api/graphql',
+  uri: `http://${window.location.hostname}:8075/dna/admin/graphql`,
   cache: new InMemoryCache({
-    addTypename: false
+    addTypename: false,
   }),
   defaultOptions: defaultOptions,
 });
