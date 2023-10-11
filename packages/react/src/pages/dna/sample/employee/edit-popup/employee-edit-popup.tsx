@@ -55,7 +55,7 @@ export const EmployeeEditPopup = ({
         console.log(result);
         onSave && onSave();
       });
-  }, []);
+  }, [employee]);
 
   return (
     <FormPopup
