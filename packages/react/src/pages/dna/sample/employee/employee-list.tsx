@@ -89,7 +89,7 @@ export const EmployeeList = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const onAddContactClick = useCallback(() => {
+  const onAddClick = useCallback(() => {
     setPopupVisible(true);
   }, []);
 
@@ -143,7 +143,7 @@ export const EmployeeList = () => {
                 text='직원 생성'
                 type='default'
                 stylingMode='contained'
-                onClick={onAddContactClick}
+                onClick={onAddClick}
               />
             </Item>
             <Item

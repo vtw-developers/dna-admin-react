@@ -41,6 +41,10 @@ export const ApplicationEditPopup = ({
     setEmployee((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
+  const reset = useCallback(() => {
+    setEmployee({ ...newEmployee });
+  }, []);
+
   const save = useCallback(() => {
     console.log(employee);
     apollo
@@ -59,7 +63,12 @@ export const ApplicationEditPopup = ({
       .then((result: any) => {
         console.log(result);
         onSave && onSave();
+        reset();
       });
+  }, [employee]);
+
+  const close = useCallback(() => {
+    reset();
   }, [employee]);
 
   return (
@@ -68,6 +77,7 @@ export const ApplicationEditPopup = ({
       visible={visible}
       setVisible={setVisible}
       onSave={save}
+      onClose={close}
     >
       <Form className='plain-styled-form' screenByWidth={getSizeQualifier}>
         <GroupItem>
