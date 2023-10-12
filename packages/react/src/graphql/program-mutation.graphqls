@@ -1,0 +1,11 @@
+extend type Mutation {
+    createProgram(program: ProgramInput): ID
+    updateProgram(program: ProgramInput): ID
+    deleteProgram(id: ID): ID
+}
+
+input ProgramInput {
+    id: ID
+    name: String
+    url: String
+}

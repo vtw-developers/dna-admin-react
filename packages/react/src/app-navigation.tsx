@@ -15,17 +15,17 @@ export const navigation = [
     ],
   },
   {
-    text: 'CRM',
-    icon: 'user',
+    text: '메뉴 관리',
+    icon: 'box',
     path: '',
     items: [
       {
-        text: 'Contact List',
-        path: '/crm-contact-list',
+        text: '프로그램 관리',
+        path: '/manage/program',
       },
       {
-        text: 'Contact Details',
-        path: '/crm-contact-details',
+        text: '메뉴 관리',
+        path: '/manage/menu',
       },
     ],
   },

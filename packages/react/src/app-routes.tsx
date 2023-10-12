@@ -14,6 +14,8 @@ import {
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
+import { MenuManage } from './pages/dna/manage/menu/menu-manage';
+import { ProgramManage } from './pages/dna/manage/program/program-manage';
 import { ApplicationList } from './pages/dna/sample/application/application-list';
 
 const routes = [
@@ -72,6 +74,14 @@ const routes = [
   {
     path: '/application',
     element: ApplicationList,
+  },
+  {
+    path: '/manage/menu',
+    element: MenuManage,
+  },
+  {
+    path: '/manage/program',
+    element: ProgramManage,
   },
 ];
 
