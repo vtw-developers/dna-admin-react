@@ -66,17 +66,13 @@ export const FormPopup = ({
           }`}
         >
           <Button
-            text='Cancel'
-            stylingMode='contained'
-            onClick={onCancelClick}
-          />
-          <Button
-            text='Save'
+            text='저장'
             stylingMode='contained'
             type='default'
             disabled={isSaveDisabled}
             onClick={onSaveClick}
           />
+          <Button text='취소' stylingMode='contained' onClick={onCancelClick} />
         </div>
       </ToolbarItem>
 
