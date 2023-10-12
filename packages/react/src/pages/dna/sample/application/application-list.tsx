@@ -89,7 +89,7 @@ export const ApplicationList = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const onAddContactClick = useCallback(() => {
+  const onAddClick = useCallback(() => {
     setPopupVisible(true);
   }, []);
 
@@ -143,7 +143,7 @@ export const ApplicationList = () => {
                 text='애플리케이션 생성'
                 type='default'
                 stylingMode='contained'
-                onClick={onAddContactClick}
+                onClick={onAddClick}
               />
             </Item>
             <Item
