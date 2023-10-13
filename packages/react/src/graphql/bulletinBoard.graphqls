@@ -1,0 +1,31 @@
+extend type Query {
+    posts(page: Int, size: Int, sortBy: String, sortDir: String): BulletinBoardPage
+    post(id: ID): BulletinBoard
+}
+
+extend type Mutation {
+    createPost(post: BulletinBoardInput): BulletinBoard
+    updatePost(post: BulletinBoardInput): BulletinBoard
+    deletePost(id: ID): BulletinBoard
+}
+
+type BulletinBoard {
+    id: ID
+    title: String
+    content: String
+    userName: String
+    writtenDate: String
+}
+
+input BulletinBoardInput {
+    id: ID
+    title: String
+    content: String
+    userName: String
+    writtenDate: String
+}
+
+type BulletinBoardPage {
+    totalElements: Int
+    content: [BulletinBoard]
+}

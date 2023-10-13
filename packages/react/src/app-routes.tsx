@@ -11,6 +11,9 @@ import {
   SignInPage,
   SignUpPage,
   UserProfile,
+  BulletinBoardList,
+  BulletinBoardDetail,
+  NewPost,
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
@@ -82,6 +85,18 @@ const routes = [
   {
     path: '/manage/program',
     element: ProgramManage,
+  },
+  {
+    path: '/bulletin-board',
+    element: BulletinBoardList,
+  },
+  {
+    path: '/bulletin-board/new',
+    element: NewPost,
+  },
+  {
+    path: '/bulletin-board/detail/:id',
+    element: BulletinBoardDetail,
   },
 ];
 

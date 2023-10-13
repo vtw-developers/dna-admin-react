@@ -95,6 +95,10 @@ export const navigation = [
         text: 'User Profile',
         path: '/user-profile',
       },
-    ],
+      {
+        text: 'Bulletin Board',
+        path: '/bulletin-board',
+      }
+    ]
   },
 ];
