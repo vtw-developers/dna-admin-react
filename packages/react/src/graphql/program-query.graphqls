@@ -1,12 +1,13 @@
 extend type Query {
-    program(ProgramId: ID): Program
-    programs(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ProgramPage
+    program(id: ID): Program
+    pagingPrograms(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ProgramPage
+    programs: [Program]
 }
 
 type Program {
     id: ID
     name: String
-    url: String
+    path: String
 }
 
 type ProgramPage {

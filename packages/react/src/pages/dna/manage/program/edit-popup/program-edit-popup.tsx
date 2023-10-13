@@ -44,7 +44,7 @@ export const ProgramEditPopup = ({
       setProgram({
         id: undefined,
         name: '',
-        url: '',
+        path: '',
       });
     } else {
       setProgram({ ...selectedItem });
@@ -108,8 +108,8 @@ export const ProgramEditPopup = ({
             <TextBox value={program.name} onValueChange={updateField('name')} />
           </FormItem>
           <FormItem>
-            <Label text='url' />
-            <TextBox value={program.url} onValueChange={updateField('url')} />
+            <Label text='path' />
+            <TextBox value={program.path} onValueChange={updateField('path')} />
           </FormItem>
         </GroupItem>
       </Form>

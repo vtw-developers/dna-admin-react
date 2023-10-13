@@ -7,5 +7,5 @@ extend type Mutation {
 input ProgramInput {
     id: ID
     name: String
-    url: String
+    path: String
 }

@@ -45,14 +45,14 @@ export const ProgramManage = () => {
             const pagingProgram = apollo
               .query({
                 query: gql`
-                  query programs(
+                  query pagingPrograms(
                     $page: Int = 0
                     $size: Int = 10
                     $sortBy: String = "id"
                     $sortDir: String = "asc"
                     $filter: String = ""
                   ) {
-                    programs(
+                      pagingPrograms(
                       page: $page
                       size: $size
                       sortBy: $sortBy
@@ -63,7 +63,7 @@ export const ProgramManage = () => {
                       content {
                         id
                         name
-                        url
+                        path
                       }
                     }
                   }
@@ -77,8 +77,7 @@ export const ProgramManage = () => {
                 },
               })
               .then((page: any) => {
-                console.log(page);
-                return pageableService.transformPage(page.data.programs);
+                return pageableService.transformPage(page.data.pagingPrograms);
               });
             return pagingProgram;
           },
@@ -113,8 +112,7 @@ export const ProgramManage = () => {
           id: selectedItem.id,
         },
       })
-      .then((result: any) => {
-        console.log(result);
+      .then(() => {
         onSave && onSave();
         refresh();
       });
@@ -142,6 +140,7 @@ export const ProgramManage = () => {
           showBorders
           ref={gridRef}
           onSelectionChanged={onSelectionChanged}
+          remoteOperations
         >
           <LoadPanel showPane={false} />
           <SearchPanel visible placeholder='검색...' />
@@ -157,22 +156,11 @@ export const ProgramManage = () => {
             showInfo
             showNavigationButtons
           />
-          <HeaderFilter visible />
-          <Sorting mode='multiple' />
           <Selection mode='single' />
           <Editing mode='popup' />
-          <Scrolling rowRenderingMode='virtual' />
-          <Paging defaultPageSize={10} />
-          <Pager
-            visible
-            displayMode='full'
-            showPageSizeSelector
-            showInfo
-            showNavigationButtons
-          />
           <Toolbar>
             <Item location='before'>
-              <span className='toolbar-header'>Program Manage</span>
+              <span className='toolbar-header'>프로그램 관리</span>
             </Item>
             <Item location='after' locateInMenu='auto'>
               <Button
@@ -229,7 +217,7 @@ export const ProgramManage = () => {
             allowEditing={false}
           />
           <Column dataField='name' />
-          <Column dataField='url' />
+          <Column dataField='path' />
         </DataGrid>
         <ProgramEditPopup
           visible={popupVisible}

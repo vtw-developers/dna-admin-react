@@ -1,0 +1,14 @@
+extend type Mutation {
+    createMenu(menu: MenuInput): ID
+    updateMenu(menu: MenuInput): ID
+    deleteMenu(id: ID): ID
+}
+
+input MenuInput {
+    id: ID
+    programId: ID
+    parentId: ID
+    name: String
+    type: String
+    icon: String
+}
