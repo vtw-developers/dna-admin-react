@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import TextBox from 'devextreme-react/text-box';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
+import { custom } from 'devextreme/ui/dialog';
 
 export const NewPost = () => {
   const navigate = useNavigate();
@@ -17,25 +18,41 @@ export const NewPost = () => {
   };
 
   const onSaved = () => {
-    apollo.mutate<any>({
-      mutation: gql`
-        mutation createPost($post: BulletinBoardInput) {
-          createPost(post: $post) {
-            id
-            title
-            content
-            userName
-            writtenDate
+    if (detail.title === '') {
+      const alert = custom({
+        title: '제목 입력',
+        messageHtml: '제목을 입력해주세요.',
+        buttons: [{ text: 'OK' }]
+      });
+      alert.show();
+    } else if (detail.content === '') {
+      const alert = custom({
+        title: '내용 입력',
+        messageHtml: '내용을 입력해주세요.',
+        buttons: [{ text: 'OK' }]
+      });
+      alert.show();
+    } else {
+      apollo.mutate<any>({
+        mutation: gql`
+          mutation createPost($post: BulletinBoardInput) {
+            createPost(post: $post) {
+              id
+              title
+              content
+              userName
+              writtenDate
+            }
           }
+        `,
+        variables: {
+          post: detail
         }
-      `,
-      variables: {
-        post: detail
-      }
-    }).then(result => {
-      console.log(result.data.createPost);
-      navigate('/bulletin-board');
-    });
+      }).then(result => {
+        console.log(result.data.createPost);
+        navigate('/bulletin-board');
+      });
+    }
   };
 
   return (

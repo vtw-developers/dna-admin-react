@@ -8,7 +8,7 @@ import TextArea from 'devextreme-react/text-area';
 import './bulletin-board-detail.scss';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
-import { confirm } from 'devextreme/ui/dialog';
+import { confirm, custom } from 'devextreme/ui/dialog';
 
 export const BulletinBoardDetail = () => {
   const navigate = useNavigate();
@@ -43,26 +43,41 @@ export const BulletinBoardDetail = () => {
   };
 
   const onSaved = () => {
-    console.log(detail);
-    apollo.mutate<any>({
-      mutation: gql`
-        mutation updatePost($post: BulletinBoardInput) {
-          updatePost(post: $post) {
-            id
-            title
-            content
-            userName
-            writtenDate
+    if (detail.title === '') {
+      const alert = custom({
+        title: '제목 입력',
+        messageHtml: '제목을 입력해주세요.',
+        buttons: [{ text: 'OK' }]
+      });
+      alert.show();
+    } else if (detail.content === '') {
+      const alert = custom({
+        title: '내용 입력',
+        messageHtml: '내용을 입력해주세요.',
+        buttons: [{ text: 'OK' }]
+      });
+      alert.show();
+    } else {
+      apollo.mutate<any>({
+        mutation: gql`
+          mutation updatePost($post: BulletinBoardInput) {
+            updatePost(post: $post) {
+              id
+              title
+              content
+              userName
+              writtenDate
+            }
           }
+        `,
+        variables: {
+          post: detail
         }
-      `,
-      variables: {
-        post: detail
-      }
-    }).then(result => {
-      console.log(result.data.updatePost);
-    });
-    setIsSaved(!isSaved);
+      }).then(result => {
+        console.log(result.data.updatePost);
+      });
+      setIsSaved(!isSaved);
+    }
   };
 
   const onRemoved = () => {
