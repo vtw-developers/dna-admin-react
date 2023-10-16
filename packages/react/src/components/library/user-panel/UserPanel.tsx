@@ -3,12 +3,13 @@ import DropDownButton from 'devextreme-react/drop-down-button';
 import { Template } from 'devextreme-react/core/template';
 import { UserMenuSection } from '../user-menu-section/UserMenuSection';
 import type { UserPanelProps } from '../../../types';
-import { useAuth } from '../../../contexts/auth';
+// import { useAuth } from '../../../contexts/auth';
 import List from 'devextreme-react/list';
 import './UserPanel.scss';
+import { defaultUser } from '../../../utils/default-user';
 
 export const UserPanel = ({ menuMode }: UserPanelProps) => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const listRef = useRef<List>(null);
 
   const dropDownButtonAttributes = {
@@ -20,6 +21,7 @@ export const UserPanel = ({ menuMode }: UserPanelProps) => {
   };
 
   const dropDownButtonContentReady = useCallback(({ component }) => {
+    console.log(menuMode);
     component.registerKeyHandler('downArrow', () => {
       listRef.current?.instance.focus();
     });
@@ -29,7 +31,7 @@ export const UserPanel = ({ menuMode }: UserPanelProps) => {
     <div className='user-panel'>
       {menuMode === 'context' && (
         <DropDownButton stylingMode='text'
-          icon={user?.avatarUrl} showArrowIcon={false}
+          icon={defaultUser?.avatarUrl} showArrowIcon={false}
           elementAttr={dropDownButtonAttributes}
           dropDownOptions={buttonDropDownOptions}
           dropDownContentTemplate='dropDownTemplate'

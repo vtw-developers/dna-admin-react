@@ -27,14 +27,14 @@ export interface UserMenuSectionProps {
 }
 
 export interface User {
-  name: string;
+  username: string;
   email: string;
   avatarUrl: string;
 }
 
 export type AuthContextType = {
   user?: User;
-  signIn: (email: string, password: string) => Promise<{ isOk: boolean; data?: User; message?: string }>;
+  signIn: (username: string, password: string, rememberMe: boolean) => Promise<{ isOk: boolean; data?: User; message?: string }>;
   signOut: () => void;
   loading: boolean;
 };

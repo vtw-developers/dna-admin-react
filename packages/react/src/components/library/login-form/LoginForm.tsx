@@ -1,17 +1,18 @@
-import React, { useState, useRef, useCallback, useContext } from 'react';
+import React, { useState, useRef, useCallback, useContext, useEffect } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import { LoginOauth } from '../login-oauth/LoginOauth';
 import Button, { ButtonTypes } from 'devextreme-react/button';
-import Form, { Item, Label, ButtonItem, ButtonOptions, RequiredRule, EmailRule } from 'devextreme-react/form';
+import Form, { Item, Label, ButtonItem, ButtonOptions, RequiredRule, /*EmailRule*/ } from 'devextreme-react/form';
 import LoadIndicator from 'devextreme-react/load-indicator';
 import notify from 'devextreme/ui/notify';
+import { confirm } from 'devextreme/ui/dialog';
 
 import { useAuth } from '../../../contexts/auth';
 import { ThemeContext } from '../../../theme/theme';
 
 import './LoginForm.scss';
+import { signInAgain } from '../../../api/auth';
 
 function getButtonStylingMode(theme: string | undefined): ButtonTypes.ButtonStyle {
   return theme === 'dark' ? 'outlined' : 'contained';
@@ -21,21 +22,41 @@ export const LoginForm = ({ resetLink, createAccountLink }) => {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
-  const formData = useRef({ email: '', password: '' });
+  const formData = useRef({ username: '', password: '', rememberMe: false });
   const themeContext = useContext(ThemeContext);
+  const [userId, setUserId] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('rememberId') !== null) {
+      setUserId(localStorage.getItem('rememberId') as any);
+      setRememberMe(true);
+    }
+  }, []);
 
   const onSubmit = useCallback(
     async(e) => {
       e.preventDefault();
-      const { email, password } = formData.current;
+      const { username, password, rememberMe } = formData.current;
       setLoading(true);
-
-      const result = await signIn(email, password);
+      if(rememberMe) localStorage.setItem('rememberId', username);
+      const result = await signIn(username, password, rememberMe) as any;
       if (result.isOk) {
         navigate('/');
       } else {
         setLoading(false);
-        notify(result.message, 'error', 2000);
+        if (result.lockedUser) {
+          notify(result.message, 'error', 2000);
+        } else if (result.duplicateLogin) {
+          const result = confirm('동일 아이디로 이미 접속 중입니다. <br><br> 지금 다시 로그인 하시겠습니까?', '재 로그인');
+          result.then((dialogResult) => {
+            if (dialogResult) {
+              return signInAgain(username, password, rememberMe);
+            }
+          });
+        } else {
+          notify(result.message, 'error', 2000);
+        }
       }
     },
     [signIn]
@@ -53,16 +74,16 @@ export const LoginForm = ({ resetLink, createAccountLink }) => {
         showColonAfterLabel
         showRequiredMark={false}
       >
-        <Item dataField='email' editorType='dxTextBox' editorOptions={emailEditorOptions}>
-          <RequiredRule message='Email is required' />
-          <EmailRule message='Email is invalid' />
+        <Item dataField='username' editorType='dxTextBox' editorOptions={{ stylingMode: 'filled', placeholder: 'Username', value: userId }}>
+          <RequiredRule message='Username is required' />
+          {/*<EmailRule message='Email is invalid' />*/}
           <Label visible={false} />
         </Item>
-        <Item dataField='password' editorType='dxTextBox' editorOptions={passwordEditorOptions}>
+        <Item dataField='password' editorType='dxTextBox' editorOptions={{ stylingMode: 'filled', placeholder: 'Password', mode: 'password' }}>
           <RequiredRule message='Password is required' />
           <Label visible={false} />
         </Item>
-        <Item dataField='rememberMe' editorType='dxCheckBox' editorOptions={rememberMeEditorOptions}>
+        <Item dataField='rememberMe' editorType='dxCheckBox' editorOptions={{ text: 'Remember me', elementAttr: { class: 'form-text' }, value: rememberMe }}>
           <Label visible={false} />
         </Item>
         <ButtonItem>
@@ -83,11 +104,11 @@ export const LoginForm = ({ resetLink, createAccountLink }) => {
         stylingMode={getButtonStylingMode(themeContext?.theme)}
       />
 
-      <LoginOauth />
+      {/*<LoginOauth />*/}
     </form>
   );
 };
 
-const emailEditorOptions = { stylingMode: 'filled', placeholder: 'Email', mode: 'email', value: 'jheart@corp.com' };
-const passwordEditorOptions = { stylingMode: 'filled', placeholder: 'Password', mode: 'password', value: 'password' };
-const rememberMeEditorOptions = { text: 'Remember me', elementAttr: { class: 'form-text' } };
+// const usernameEditorOptions = { stylingMode: 'filled', placeholder: 'Username', value: '' };
+// const passwordEditorOptions = { stylingMode: 'filled', placeholder: 'Password', mode: 'password' };
+// const rememberMeEditorOptions = { text: 'Remember me', elementAttr: { class: 'form-text' } };

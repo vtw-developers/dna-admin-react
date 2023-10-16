@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import { getUser, signIn as sendSignInRequest } from '../api/auth';
+import { getUser, logOut, signIn as sendSignInRequest } from '../api/auth';
 import type { User, AuthContextType } from '../types';
 
 function AuthProvider(props: React.PropsWithChildren<unknown>) {
@@ -8,26 +8,25 @@ function AuthProvider(props: React.PropsWithChildren<unknown>) {
 
   useEffect(() => {
     (async function() {
-      const result = await getUser();
-      if (result.isOk) {
-        setUser(result.data);
-      }
-
+      const result = await getUser() as any;
+      setUser(result);
       setLoading(false);
     })();
   }, []);
 
-  const signIn = useCallback(async(email: string, password: string) => {
-    const result = await sendSignInRequest(email, password);
+  const signIn = useCallback(async(username: string, password: string, rememberMe: boolean) => {
+    const result = await sendSignInRequest(username, password, rememberMe) as any;
     if (result.isOk) {
       setUser(result.data);
     }
-
     return result;
   }, []);
 
-  const signOut = useCallback(() => {
-    setUser(undefined);
+  const signOut = useCallback(async() => {
+    const result = await logOut() as any;
+    if (result.isOk) {
+      setUser(undefined);
+    }
   }, []);
 
   return <AuthContext.Provider value={{ user, signIn, signOut, loading }} {...props} />;

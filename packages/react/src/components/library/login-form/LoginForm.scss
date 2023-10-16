@@ -1,6 +1,7 @@
 @use "../../../variables.scss" as *;
 
 .login-form {
+  width: 310px;
   .form-text {
     color: var(--base-text-color-alpha);
   }

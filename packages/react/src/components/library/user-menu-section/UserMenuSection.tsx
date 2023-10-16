@@ -38,7 +38,7 @@ export const UserMenuSection = ({ showAvatar, listRef }: UserMenuSectionProps) =
             />
           </div>
         )}
-        <div className='user-name'>{user?.name}</div>
+        <div className='user-name'>{user?.username}</div>
       </div>
       <List ref={listRef} elementAttr={listElementAttr} onItemClick={onItemClick} items={menuItems} />
     </>
