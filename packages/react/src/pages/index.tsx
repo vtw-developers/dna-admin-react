@@ -10,3 +10,6 @@ export { SignInPage } from './sign-in-form/sign-in-form';
 export { SignUpPage } from './sign-up-form/sign-up-form';
 export { ResetPasswordPage } from './reset-password-form/reset-password-form';
 export { UserProfile } from './user-profile/user-profile';
+export { BulletinBoardList } from './dna/bulletin-board/bulletin-board-list/bulletin-board-list';
+export { BulletinBoardDetail } from './dna/bulletin-board/bulletin-board-detail/bulletin-board-detail';
+export { NewPost } from './dna/bulletin-board/bulletin-board-new-post/new-post';

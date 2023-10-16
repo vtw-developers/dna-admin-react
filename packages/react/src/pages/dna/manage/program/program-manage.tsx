@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import './employee-list.scss';
+import { Column } from 'devextreme-react/tree-list';
+import './program-manage.scss';
 import DataGrid, {
-  Column,
   ColumnChooser,
+  Editing,
   HeaderFilter,
   Item,
   LoadPanel,
@@ -14,21 +15,23 @@ import DataGrid, {
   Sorting,
   Toolbar,
 } from 'devextreme-react/data-grid';
-import Button from 'devextreme-react/button';
-import { Contact } from '../../../../types/crm-contact';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
-import { PageableService } from '../../util/pageable';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
-import { EmployeeEditPopup } from './edit-popup/employee-edit-popup';
+import { PageableService } from '../../util/pageable';
+import { Contact } from '../../../../types/crm-contact';
+import { ProgramEditPopup } from './edit-popup/program-edit-popup';
+import { Button } from 'devextreme-react/button';
 
 const pageableService = new PageableService();
 
-export const EmployeeList = () => {
+export const ProgramManage = () => {
   const [gridDataSource, setGridDataSource] =
     useState<DataSource<Contact[], string>>();
   const [popupVisible, setPopupVisible] = useState(false);
+  const [popupType, setPopupType] = useState('');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const gridRef = useRef<DataGrid>(null);
 
   useEffect(() => {
@@ -39,17 +42,17 @@ export const EmployeeList = () => {
           load: (loadOptions) => {
             const pageable = pageableService.getPageable(loadOptions);
 
-            const page$ = apollo
+            const pagingProgram = apollo
               .query({
                 query: gql`
-                  query employees(
+                  query pagingPrograms(
                     $page: Int = 0
                     $size: Int = 10
                     $sortBy: String = "id"
                     $sortDir: String = "asc"
                     $filter: String = ""
                   ) {
-                    employees(
+                      pagingPrograms(
                       page: $page
                       size: $size
                       sortBy: $sortBy
@@ -60,8 +63,7 @@ export const EmployeeList = () => {
                       content {
                         id
                         name
-                        gender
-                        birthDate
+                        path
                       }
                     }
                   }
@@ -75,10 +77,9 @@ export const EmployeeList = () => {
                 },
               })
               .then((page: any) => {
-                console.log(page);
-                return pageableService.transformPage(page.data.employees);
+                return pageableService.transformPage(page.data.pagingPrograms);
               });
-            return page$;
+            return pagingProgram;
           },
         }),
       })
@@ -89,9 +90,33 @@ export const EmployeeList = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const onAddClick = useCallback(() => {
+  const onAddProgramClick = useCallback(() => {
     setPopupVisible(true);
+    setPopupType('Add');
   }, []);
+
+  const onUpdatePopupClick = useCallback(() => {
+    setPopupVisible(true);
+    setPopupType('Update');
+  }, []);
+
+  const onDeletePopupClick = useCallback(() => {
+    apollo
+      .mutate({
+        mutation: gql`
+          mutation deleteProgram($id: ID) {
+            deleteProgram(id: $id)
+          }
+        `,
+        variables: {
+          id: selectedItem.id,
+        },
+      })
+      .then(() => {
+        onSave && onSave();
+        refresh();
+      });
+  }, [selectedItem]);
 
   const refresh = useCallback(() => {
     gridRef.current?.instance.refresh();
@@ -101,27 +126,25 @@ export const EmployeeList = () => {
     refresh();
   }, []);
 
+  const onSelectionChanged = useCallback((e) => {
+    const selectedRowsData = e.selectedRowsData[0];
+    setSelectedItem(selectedRowsData);
+  }, []);
+
   return (
-    <div className='view crm-contact-list'>
-      <div className='view-wrapper view-wrapper-contact-list'>
+    <div className='view-wrapper view-wrapper-program-manage'>
+      <div id='program-manage-grid'>
         <DataGrid
-          className='grid'
-          noDataText=''
-          focusedRowEnabled
-          height='100%'
           dataSource={gridDataSource}
-          allowColumnReordering
+          keyExpr='id'
+          showBorders
           ref={gridRef}
+          onSelectionChanged={onSelectionChanged}
           remoteOperations
         >
           <LoadPanel showPane={false} />
           <SearchPanel visible placeholder='검색...' />
           <ColumnChooser enabled />
-          <Selection
-            selectAllMode='allPages'
-            showCheckBoxesMode='always'
-            mode='multiple'
-          />
           <HeaderFilter visible />
           <Sorting mode='multiple' />
           <Scrolling rowRenderingMode='virtual' />
@@ -133,17 +156,35 @@ export const EmployeeList = () => {
             showInfo
             showNavigationButtons
           />
+          <Selection mode='single' />
+          <Editing mode='popup' />
           <Toolbar>
             <Item location='before'>
-              <div className='grid-header'>직원 목록</div>
+              <span className='toolbar-header'>프로그램 관리</span>
             </Item>
             <Item location='after' locateInMenu='auto'>
               <Button
                 icon='plus'
-                text='직원 생성'
+                text='add'
                 type='default'
                 stylingMode='contained'
-                onClick={onAddClick}
+                onClick={onAddProgramClick}
+              />
+              <Button
+                icon='edit'
+                text='edit'
+                type='default'
+                stylingMode='outlined'
+                disabled={!selectedItem}
+                onClick={onUpdatePopupClick}
+              />
+              <Button
+                icon='minus'
+                text='delete'
+                type='danger'
+                stylingMode='contained'
+                disabled={!selectedItem}
+                onClick={onDeletePopupClick}
               />
             </Item>
             <Item
@@ -169,11 +210,20 @@ export const EmployeeList = () => {
             <Item name='columnChooserButton' locateInMenu='auto' />
             <Item name='searchPanel' locateInMenu='auto' />
           </Toolbar>
-          <Column dataField='name' caption='이름' minWidth={150} />
+          <Column
+            dataField='id'
+            caption='ID'
+            width={100}
+            allowEditing={false}
+          />
+          <Column dataField='name' />
+          <Column dataField='path' />
         </DataGrid>
-        <EmployeeEditPopup
+        <ProgramEditPopup
           visible={popupVisible}
           setVisible={changePopupVisibility}
+          type={popupType}
+          selectedItem={selectedItem}
           onSave={onSave}
         />
       </div>

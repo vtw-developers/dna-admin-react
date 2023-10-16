@@ -1,9 +1,6 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import TreeView from 'devextreme-react/tree-view';
-
-import { AppFooter } from '../..';
-import { navigation } from '../../../app-navigation';
 import { useNavigation } from '../../../contexts/navigation';
 import { useScreenSize } from '../../../utils/media-query';
 
@@ -12,19 +9,50 @@ import type { SideNavigationMenuProps } from '../../../types';
 import './SideNavigationMenu.scss';
 
 import * as events from 'devextreme/events';
+import { apollo } from '../../../graphql-apollo';
+import { gql } from '@apollo/client';
+import { Template } from 'devextreme-react/core/template';
+import Button from 'devextreme-react/button';
 
-export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigationMenuProps>) => {
-  const { children, selectedItemChanged, openMenu, compactMode, onMenuReady } = props;
+export const SideNavigationMenu = (
+  props: React.PropsWithChildren<SideNavigationMenuProps>
+) => {
+  const { children, selectedItemChanged, openMenu, compactMode, onMenuReady } =
+    props;
 
   const { isLarge } = useScreenSize();
-  function normalizePath() {
-    return navigation.map((item) => ({ ...item, expanded: isLarge, path: item.path && !/^\//.test(item.path) ? `/${item.path}` : item.path }));
-  }
 
-  const items = useMemo(
-    normalizePath,
-    []
-  );
+  const [menuItems, setMenuItems] = useState<any>([]);
+
+  useEffect(() => {
+    menuList();
+  }, []);
+
+  function menuList() {
+    apollo
+      .query({
+        query: gql`
+          query menus {
+            menus {
+              id
+              name
+              type
+              parentId
+              programId
+              icon
+            }
+          }
+        `,
+      })
+      .then((menuResult: any) => {
+        setMenuItems(
+          menuResult.data.menus.map((item) => ({
+            ...item,
+            expanded: isLarge,
+          }))
+        );
+      });
+  }
 
   const {
     navigationData: { currentPath },
@@ -63,25 +91,41 @@ export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigation
     }
   }, [currentPath, compactMode]);
 
+  const itemTemplate = useCallback((itemObj) => {
+    return (
+      <Button
+        icon={itemObj.icon}
+        stylingMode='text'
+        text={itemObj.name}
+        className='noHover'
+      />
+    );
+  }, []);
+
   return (
-    <div className='dx-swatch-additional side-navigation-menu' ref={getWrapperRef}>
+    <div
+      className='dx-swatch-additional side-navigation-menu'
+      ref={getWrapperRef}
+    >
       {children}
       <div className='menu-container'>
         <TreeView
           ref={treeViewRef}
-          items={items}
-          keyExpr='path'
+          items={menuItems}
+          dataStructure='plain'
+          parentIdExpr='parentId'
+          keyExpr='id'
+          itemTemplate='itemTemplate'
           selectionMode='single'
           focusStateEnabled={false}
           expandEvent='click'
           onItemClick={selectedItemChanged}
           onContentReady={onMenuReady}
           width='100%'
-        />
+        >
+          <Template name='itemTemplate' render={itemTemplate} />
+        </TreeView>
       </div>
-      <AppFooter>
-        Copyright © {new Date().getFullYear()} <br /> Developer Express Inc.
-      </AppFooter>
     </div>
   );
 };

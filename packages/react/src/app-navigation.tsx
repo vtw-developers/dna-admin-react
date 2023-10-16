@@ -8,20 +8,24 @@ export const navigation = [
         text: '직원 관리',
         path: '/employee',
       },
+      {
+        text: '애플리케이션',
+        path: '/application',
+      },
     ],
   },
   {
-    text: 'CRM',
-    icon: 'user',
+    text: '메뉴 관리',
+    icon: 'box',
     path: '',
     items: [
       {
-        text: 'Contact List',
-        path: '/crm-contact-list',
+        text: '프로그램 관리',
+        path: '/manage/program',
       },
       {
-        text: 'Contact Details',
-        path: '/crm-contact-details',
+        text: '메뉴 관리',
+        path: '/manage/menu',
       },
     ],
   },
@@ -91,6 +95,10 @@ export const navigation = [
         text: 'User Profile',
         path: '/user-profile',
       },
-    ],
+      {
+        text: 'Bulletin Board',
+        path: '/bulletin-board',
+      }
+    ]
   },
 ];

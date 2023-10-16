@@ -1,0 +1,13 @@
+extend type Query {
+    menu(MenuId: ID): Menu
+    menus: [Menu]
+}
+
+type Menu {
+    id: ID
+    parentId: ID
+    programId: ID
+    type: String
+    name: String
+    icon: String
+}

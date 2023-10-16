@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import './employee-list.scss';
+import './application-list.scss';
 import DataGrid, {
   Column,
   ColumnChooser,
@@ -21,11 +21,11 @@ import CustomStore from 'devextreme/data/custom_store';
 import { PageableService } from '../../util/pageable';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
-import { EmployeeEditPopup } from './edit-popup/employee-edit-popup';
+import { ApplicationEditPopup } from './edit-popup/application-edit-popup';
 
 const pageableService = new PageableService();
 
-export const EmployeeList = () => {
+export const ApplicationList = () => {
   const [gridDataSource, setGridDataSource] =
     useState<DataSource<Contact[], string>>();
   const [popupVisible, setPopupVisible] = useState(false);
@@ -135,12 +135,12 @@ export const EmployeeList = () => {
           />
           <Toolbar>
             <Item location='before'>
-              <div className='grid-header'>직원 목록</div>
+              <div className='grid-header'>애플리케이션 목록</div>
             </Item>
             <Item location='after' locateInMenu='auto'>
               <Button
                 icon='plus'
-                text='직원 생성'
+                text='애플리케이션 생성'
                 type='default'
                 stylingMode='contained'
                 onClick={onAddClick}
@@ -169,9 +169,10 @@ export const EmployeeList = () => {
             <Item name='columnChooserButton' locateInMenu='auto' />
             <Item name='searchPanel' locateInMenu='auto' />
           </Toolbar>
-          <Column dataField='name' caption='이름' minWidth={150} />
+          <Column dataField='container' caption='컨테이너' minWidth={150} />
+          <Column dataField='name' caption='애플리케이션명' minWidth={150} />
         </DataGrid>
-        <EmployeeEditPopup
+        <ApplicationEditPopup
           visible={popupVisible}
           setVisible={changePopupVisibility}
           onSave={onSave}

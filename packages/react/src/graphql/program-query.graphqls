@@ -1,0 +1,16 @@
+extend type Query {
+    program(id: ID): Program
+    pagingPrograms(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ProgramPage
+    programs: [Program]
+}
+
+type Program {
+    id: ID
+    name: String
+    path: String
+}
+
+type ProgramPage {
+    totalElements: Int
+    content: [Program]
+}
