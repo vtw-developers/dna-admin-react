@@ -13,16 +13,29 @@ type BulletinBoard {
     id: ID
     title: String
     content: String
-    userName: String
+    user: User
     writtenDate: String
+}
+
+type User {
+    username: String
+    name: String
+    password: String
+    token: String
+    loginAttempts: Int
 }
 
 input BulletinBoardInput {
     id: ID
     title: String
     content: String
-    userName: String
+    user: UserInput
     writtenDate: String
+}
+
+input UserInput {
+    username: String
+    name: String
 }
 
 type BulletinBoardPage {

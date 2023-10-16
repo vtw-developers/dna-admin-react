@@ -20,7 +20,10 @@ export const BulletinBoardDetail = () => {
             id
             title
             content
-            userName
+            user {
+                username
+                name
+            }
             writtenDate
           }
         }
@@ -32,10 +35,15 @@ export const BulletinBoardDetail = () => {
       return result.data.post;
     });
     setDetail(post);
+    const user = JSON.parse(localStorage.getItem('user') || '');
+    if (user.username !== post.user.username) {
+      setIsWriter(false);
+    }
     return post;
   };
   const [detail, setDetail] = useState<any>(loadDetail);
   const [isSaved, setIsSaved] = useState<any>(true);
+  const [isWriter, setIsWriter] = useState<any>();
 
   const updateField = (field: string) => (value) => {
     setDetail((prevState) => ({ ...prevState, ...{ [field]: value.value } }));
@@ -64,7 +72,10 @@ export const BulletinBoardDetail = () => {
               id
               title
               content
-              userName
+              user {
+                  username
+                  name
+              }
               writtenDate
             }
           }
@@ -90,7 +101,10 @@ export const BulletinBoardDetail = () => {
                 id
                 title
                 content
-                userName
+                user {
+                    username
+                    name
+                }
                 writtenDate
               }
             }
@@ -127,6 +141,7 @@ export const BulletinBoardDetail = () => {
             stylingMode='contained'
             width='100px'
             onClick={onSaved}
+            visible={isWriter}
           />
         </Item>
         <Item
@@ -140,6 +155,7 @@ export const BulletinBoardDetail = () => {
             stylingMode='contained'
             width='100px'
             onClick={onRemoved}
+            visible={isWriter}
           />
         </Item>
         <Item location='after' locateInMenu='auto'>

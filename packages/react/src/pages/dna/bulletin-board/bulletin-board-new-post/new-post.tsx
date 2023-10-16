@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BulletinBoardEditor } from '../bulletin-board-editor/bulletin-board-editor';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
 import Button from 'devextreme-react/button';
@@ -10,12 +10,19 @@ import { custom } from 'devextreme/ui/dialog';
 
 export const NewPost = () => {
   const navigate = useNavigate();
-  const initial = { id: '', title: '', content: '', userName: 'Jitto', writtenDate: '' };
-  const [detail, setDetail] = useState<any>(initial);
+  const getUsername = () => {
+    const user = JSON.parse(localStorage.getItem('user') || '');
+    return { id: '', title: '', content: '', user: { username: user.username }, writtenDate: '' };
+  };
+  const [detail, setDetail] = useState<any>(getUsername);
 
   const updateField = (field: string) => (value) => {
     setDetail((prevState) => ({ ...prevState, ...{ [field]: value.value } }));
   };
+
+  useEffect(() => {
+    document.body.getElementsByClassName('dx-htmleditor')[0].classList.remove('dx-state-focused');
+  }, []);
 
   const onSaved = () => {
     if (detail.title === '') {
@@ -40,7 +47,10 @@ export const NewPost = () => {
               id
               title
               content
-              userName
+              user {
+                username
+                name
+              }
               writtenDate
             }
           }

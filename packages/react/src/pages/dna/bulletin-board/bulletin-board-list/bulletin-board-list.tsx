@@ -53,7 +53,10 @@ export const BulletinBoardList = () => {
                         id
                         title
                         content
-                        userName
+                        user {
+                            username
+                            name
+                        }
                         writtenDate
                       }
                     }
@@ -173,11 +176,11 @@ export const BulletinBoardList = () => {
           width={500}
         />
         <Column
-          dataField='userName'
+          dataField='user.name'
           caption='작성자'
         />
         <Column
-          dataField='userId'
+          dataField='user.username'
           caption='아이디'
         />
         <Column
@@ -186,6 +189,7 @@ export const BulletinBoardList = () => {
           alignment='left'
           dataType='datetime'
           sortOrder='desc'
+          format='yyyy-MM-dd, hh:mm:ss aa'
         />
       </DataGrid>
     </div>
