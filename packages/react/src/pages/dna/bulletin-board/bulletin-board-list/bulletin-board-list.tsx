@@ -38,7 +38,7 @@ export const BulletinBoardList = () => {
                 query: gql`
                   query posts(
                     $page: Int = 0
-                    $size: Int = 10
+                    $size: Int = 1000
                     $sortBy: String = "id"
                     $sortDir: String = "asc"
                   ) {
@@ -101,7 +101,7 @@ export const BulletinBoardList = () => {
     <div className='view-wrapper view-wrapper-task-list bulletin-board'>
       <Toolbar className='toolbar-common'>
         <Item location='before'>
-          <span className='toolbar-header'>Bulletin Board</span>
+          <span className='toolbar-header'>게시판</span>
         </Item>
         <Item
           location='after'
@@ -110,7 +110,7 @@ export const BulletinBoardList = () => {
         >
           <Button
             icon='plus'
-            text='New Post'
+            text='글쓰기'
             type='default'
             stylingMode='contained'
             onClick={onClickNewPost}
@@ -140,7 +140,7 @@ export const BulletinBoardList = () => {
         >
           <TextBox
             mode='search'
-            placeholder='Search'
+            placeholder='검색'
             onInput={search}
           />
         </Item>
@@ -163,22 +163,29 @@ export const BulletinBoardList = () => {
           showNavigationButtons
         />
         <Column
-          dataField='title'
-          caption='Title'
+          dataField='id'
+          caption='목차'
+          width={100}
         />
         <Column
-          dataField='content'
-          caption='Content'
+          dataField='title'
+          caption='제목'
+          width={500}
         />
         <Column
           dataField='userName'
-          caption='UserName'
+          caption='작성자'
+        />
+        <Column
+          dataField='userId'
+          caption='아이디'
         />
         <Column
           dataField='writtenDate'
-          caption='Date'
+          caption='작성일'
           alignment='left'
           dataType='datetime'
+          sortOrder='desc'
         />
       </DataGrid>
     </div>

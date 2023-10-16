@@ -59,7 +59,7 @@ export const NewPost = () => {
     <div className='view-wrapper view-wrapper-task-list new-post'>
       <Toolbar className='toolbar-common'>
         <Item location='before'>
-          <span className='toolbar-header'>New Post</span>
+          <span className='toolbar-header'>게시글 작성</span>
         </Item>
         <Item
           location='after'
@@ -83,7 +83,7 @@ export const NewPost = () => {
         onValueChanged={updateField('title')}
         height='40px'
       />
-      <BulletinBoardEditor detail={detail} setDetail={setDetail} />
+      <BulletinBoardEditor detail={detail} setDetail={setDetail} isSaved={false} />
     </div>
   );
 };

@@ -4,7 +4,6 @@ import { BulletinBoardEditor } from '../bulletin-board-editor/bulletin-board-edi
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextBox from 'devextreme-react/text-box';
-import TextArea from 'devextreme-react/text-area';
 import './bulletin-board-detail.scss';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
@@ -115,7 +114,7 @@ export const BulletinBoardDetail = () => {
     <div className='view-wrapper view-wrapper-task-list bulletin-board-detail'>
       <Toolbar className='toolbar-common'>
         <Item location='before'>
-          <span className='toolbar-header'>{ detail?.title }</span>
+          <span className='toolbar-header'>{ isSaved ? detail?.title : '게시글 수정' }</span>
         </Item>
         <Item
           location='after'
@@ -123,7 +122,7 @@ export const BulletinBoardDetail = () => {
           locateInMenu='auto'
         >
           <Button
-            text={isSaved ? 'Modify' : 'Save'}
+            text={isSaved ? '수정' : '저장'}
             type={isSaved ? 'default' : 'success'}
             stylingMode='contained'
             width='100px'
@@ -136,7 +135,7 @@ export const BulletinBoardDetail = () => {
           locateInMenu='auto'
         >
           <Button
-            text='delete'
+            text='삭제'
             type='danger'
             stylingMode='contained'
             width='100px'
@@ -167,15 +166,8 @@ export const BulletinBoardDetail = () => {
         height='40px'
         visible={!isSaved}
       />
-      <TextArea
-        label='내용'
-        value={detail?.content}
-        height='500px'
-        visible={isSaved}
-        readOnly={isSaved}
-      />
-      <div className='bulletin-board-detail-editor' hidden={isSaved}>
-        <BulletinBoardEditor detail={detail} setDetail={setDetail} />
+      <div className='bulletin-board-detail-editor'>
+        <BulletinBoardEditor detail={detail} setDetail={setDetail} isSaved={isSaved} />
       </div>
     </div>
   );

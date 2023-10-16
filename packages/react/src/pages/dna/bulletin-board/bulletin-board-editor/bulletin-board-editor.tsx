@@ -5,8 +5,9 @@ import { Toolbar, Item } from 'devextreme-react/html-editor';
 type Props = {
   detail
   setDetail
+  isSaved
 }
-export const BulletinBoardEditor = ({ detail, setDetail }:PropsWithChildren<Props>) => {
+export const BulletinBoardEditor = ({ detail, setDetail, isSaved }:PropsWithChildren<Props>) => {
   const sizeValues = [ '8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt' ];
   const fontValues = [ 'Arial', 'Georgia', 'Tahoma', 'Times New Roman', 'Verdana' ];
   const headerValues = [ false, 1, 2, 3, 4, 5 ];
@@ -17,8 +18,19 @@ export const BulletinBoardEditor = ({ detail, setDetail }:PropsWithChildren<Prop
   };
 
   useEffect(() => {
+    if (isSaved) {
+      document.body.getElementsByClassName('dx-htmleditor')[0].classList.remove('dx-htmleditor-outlined');
+      document.body.getElementsByClassName('dx-htmleditor-toolbar-wrapper')[0].setAttribute('hidden', 'true');
+    }
     htmlEditorRef?.current?.instance.setSelection(detail?.content?.length, 0);
   }, [detail]);
+
+  useEffect(() => {
+    if (isSaved) {
+      document.body.getElementsByClassName('dx-htmleditor')[0].classList.remove('dx-htmleditor-outlined');
+      document.body.getElementsByClassName('dx-htmleditor-toolbar-wrapper')[0].setAttribute('hidden', 'true');
+    }
+  }, [isSaved]);
 
   return (
     <div className='bulletin-board-editor'>
@@ -29,6 +41,7 @@ export const BulletinBoardEditor = ({ detail, setDetail }:PropsWithChildren<Prop
         valueType='html'
         height='700px'
         onValueChange={updateField('content')}
+        readOnly={isSaved}
       >
         <Toolbar>
           <Item name='undo' />
