@@ -65,6 +65,16 @@ export const BulletinBoardDetail = () => {
       });
       alert.show();
     } else {
+      const user = JSON.parse(localStorage.getItem('user') || '');
+      if (user.username !== detail.user.username) {
+        const alert = custom({
+          title: '수정 오류',
+          messageHtml: '권한이 없는 유저입니다.',
+          buttons: [{ text: 'OK' }]
+        });
+        alert.show();
+        navigate('/bulletin-board');
+      }
       apollo.mutate<any>({
         mutation: gql`
           mutation updatePost($post: BulletinBoardInput) {

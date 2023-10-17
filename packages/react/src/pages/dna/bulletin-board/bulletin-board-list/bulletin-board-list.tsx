@@ -100,6 +100,29 @@ export const BulletinBoardList = () => {
     navigate(`/bulletin-board/detail/${postId}`);
   };
 
+  const customizeDatetime = (data) => {
+    const year = data.value.getFullYear();
+    const month = data.value.getMonth() + 1;
+    const day = data.value.getDate();
+    // eslint-disable-next-line prefer-template
+    const date = year + '-' + month + '-' + day;
+
+    const hours = data.value.getHours();
+    let minutes = data.value.getMinutes();
+    // eslint-disable-next-line prefer-template
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    let seconds = data.value.getSeconds();
+    // eslint-disable-next-line prefer-template
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    const ampm = hours >= 12 ? '오후' : '오전';
+    // eslint-disable-next-line prefer-template
+    const time = ampm + ' ' + hours + ':' + minutes + ':' + seconds;
+
+    // eslint-disable-next-line prefer-template
+    const datetime = date + ', ' + time;
+    return datetime;
+  };
+
   return (
     <div className='view-wrapper view-wrapper-task-list bulletin-board'>
       <Toolbar className='toolbar-common'>
@@ -189,7 +212,7 @@ export const BulletinBoardList = () => {
           alignment='left'
           dataType='datetime'
           sortOrder='desc'
-          format='yyyy-MM-dd, hh:mm:ss aa'
+          customizeText={customizeDatetime}
         />
       </DataGrid>
     </div>
