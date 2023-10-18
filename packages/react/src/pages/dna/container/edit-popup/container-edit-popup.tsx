@@ -32,6 +32,7 @@ export const ContainerEditPopup = ({
   setVisible,
   type,
   onSave,
+  selectedItem,
   parentContainer,
 }: PropsWithChildren<Props>) => {
 
@@ -46,11 +47,18 @@ export const ContainerEditPopup = ({
     { id: 'SINGLE', name: 'Single' },
   ];
 
-  const [container, setContainer] = useState<any>(newContainer);
-
   useEffect(() => {
-    console.log('container popup');
+    if (type === '생성') {
+      setContainer({ ...newContainer });
+    } else {
+      setContainer({ ...selectedItem });
+      setOldName(selectedItem?.name);
+    }
   }, [visible]);
+
+  const [container, setContainer] = useState<any>(newContainer);
+  const [oldName, setOldName] = useState('');
+
   const updateField = (field: string) => (value) => {
     setContainer((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
@@ -60,7 +68,7 @@ export const ContainerEditPopup = ({
   }, []);
 
   const save = useCallback(() => {
-    if (type === 'Add') {
+    if (type === '생성') {
       apollo
         .mutate({
           mutation: gql`
@@ -81,6 +89,22 @@ export const ContainerEditPopup = ({
           console.log(result);
           notify('서버 이름이 이미 존재합니다.', 'error', 2500);
         });
+    } else {
+      apollo
+        .mutate({
+          mutation: gql`
+            mutation updateContainer($oldName: String, $newOne: ContainerInput) {
+                updateContainer(oldName: $oldName, newOne: $newOne)
+            }
+          `,
+          variables: {
+            oldName: oldName,
+            newOne: container
+          },
+        })
+        .then(() => {
+          onSave && onSave();
+        });
     }
   }, [container]);
 
@@ -93,11 +117,11 @@ export const ContainerEditPopup = ({
     >
       <Form className='plain-styled-form' screenByWidth={getSizeQualifier}>
         <FormItem>
-          <Label text='name' />
+          <Label text='이름' />
           <TextBox value={container.name} onValueChange={updateField('name')} />
         </FormItem>
         <FormItem>
-          <Label text='type' />
+          <Label text='유형' />
           <SelectBox
             items={types}
             value={container.type}
@@ -108,7 +132,7 @@ export const ContainerEditPopup = ({
         </FormItem>
         {container.type == 'SINGLE' && (
           <FormItem>
-            <Label text='Group' />
+            <Label text='그룹' />
             <SelectBox
               items={parentContainer}
               value={container.parentId}

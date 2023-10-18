@@ -4,6 +4,8 @@ extend type Query {
 
 extend type Mutation {
     createContainer(container: ContainerInput): ID
+    updateContainer(oldName: String, newOne:ContainerInput): ID
+    deleteContainer(name: String): ID
 }
 
 type Container {

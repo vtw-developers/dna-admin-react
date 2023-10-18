@@ -3,12 +3,19 @@ import './container-list.scss';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
 import { Button } from 'devextreme-react/button';
 import { Column, Editing, TreeList } from 'devextreme-react/tree-list';
-import { HeaderFilter, LoadPanel, Scrolling, Selection, Sorting } from 'devextreme-react/data-grid';
+import {
+  HeaderFilter,
+  LoadPanel,
+  Scrolling,
+  Selection,
+  Sorting,
+} from 'devextreme-react/data-grid';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { ContainerEditPopup } from './edit-popup/container-edit-popup';
+import { confirm } from 'devextreme/ui/dialog';
 
 export const ContainerList = () => {
   const [treeDataSource, setTreeDataSource] = useState<DataSource>();
@@ -28,13 +35,13 @@ export const ContainerList = () => {
               .query({
                 query: gql`
                   query containers {
-                      containers {
-                          id
-                          name
-                          type
-                          hostname
-                          parentId
-                      }
+                    containers {
+                      id
+                      name
+                      type
+                      hostname
+                      parentId
+                    }
                   }
                 `,
               })
@@ -42,7 +49,7 @@ export const ContainerList = () => {
                 console.log(result.data.containers);
                 const servers = result.data.containers;
                 if (servers) {
-                  const items: any[] = servers.filter(server => server.type === 'GROUP');
+                  const items: any[] = servers.filter((server) => server.type === 'GROUP');
                   setParentContainer(items);
                 }
                 return result.data.containers;
@@ -58,10 +65,38 @@ export const ContainerList = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const onAddMenuClick = useCallback(() => {
+  const onAddPopupClick = useCallback(() => {
     setPopupVisible(true);
-    setPopupType('Add');
+    setPopupType('생성');
   }, []);
+
+  const onUpdatePopupClick = useCallback(() => {
+    setPopupVisible(true);
+    setPopupType('수정');
+  }, []);
+
+  const onDeletePopupClick = useCallback(() => {
+    const result = confirm('해당 컨테이너를 삭제하시겠습니까?', '컨테이너 삭제');
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation deleteContainer($name: String) {
+                deleteContainer(name: $name)
+              }
+            `,
+            variables: {
+              name: selectedItem.name,
+            },
+          })
+          .then(() => {
+            onSave && onSave();
+            refresh();
+          });
+      }
+    });
+  }, [selectedItem]);
 
   const refresh = useCallback(() => {
     treeListRef.current?.instance.refresh();
@@ -86,24 +121,26 @@ export const ContainerList = () => {
         <Item location='after' locateInMenu='auto'>
           <Button
             icon='plus'
-            text='add'
+            text='생성'
             type='default'
             stylingMode='contained'
-            onClick={onAddMenuClick}
+            onClick={onAddPopupClick}
           />
           <Button
             icon='edit'
-            text='edit'
+            text='수정'
             type='default'
             stylingMode='outlined'
             disabled={!selectedItem}
+            onClick={onUpdatePopupClick}
           />
           <Button
             icon='minus'
-            text='delete'
+            text='삭제'
             type='danger'
             stylingMode='contained'
             disabled={!selectedItem}
+            onClick={onDeletePopupClick}
           />
         </Item>
         <Item
@@ -137,8 +174,8 @@ export const ContainerList = () => {
         <Scrolling rowRenderingMode='virtual' />
         <Selection mode='single' />
         <Editing mode='popup' />
-        <Column dataField='name' />
-        <Column dataField='type' />
+        <Column dataField='name' caption='이름' />
+        <Column dataField='type' caption='유형' />
         <Column dataField='hostname' />
       </TreeList>
       <ContainerEditPopup
