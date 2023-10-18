@@ -6,13 +6,11 @@ import Button, { ButtonTypes } from 'devextreme-react/button';
 import Form, { Item, Label, ButtonItem, ButtonOptions, RequiredRule, /*EmailRule*/ } from 'devextreme-react/form';
 import LoadIndicator from 'devextreme-react/load-indicator';
 import notify from 'devextreme/ui/notify';
-import { confirm } from 'devextreme/ui/dialog';
 
 import { useAuth } from '../../../contexts/auth';
 import { ThemeContext } from '../../../theme/theme';
 
 import './LoginForm.scss';
-import { signInAgain } from '../../../api/auth';
 
 function getButtonStylingMode(theme: string | undefined): ButtonTypes.ButtonStyle {
   return theme === 'dark' ? 'outlined' : 'contained';
@@ -47,13 +45,6 @@ export const LoginForm = ({ resetLink, createAccountLink }) => {
         setLoading(false);
         if (result.lockedUser) {
           notify(result.message, 'error', 2000);
-        } else if (result.duplicateLogin) {
-          const result = confirm('동일 아이디로 이미 접속 중입니다. <br><br> 지금 다시 로그인 하시겠습니까?', '재 로그인');
-          result.then((dialogResult) => {
-            if (dialogResult) {
-              return signInAgain(username, password, rememberMe);
-            }
-          });
         } else {
           notify(result.message, 'error', 2000);
         }

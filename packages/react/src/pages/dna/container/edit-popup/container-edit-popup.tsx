@@ -49,6 +49,7 @@ export const ContainerEditPopup = ({
   const [container, setContainer] = useState<any>(newContainer);
 
   useEffect(() => {
+    console.log('container popup');
   }, [visible]);
   const updateField = (field: string) => (value) => {
     setContainer((prevState) => ({ ...prevState, ...{ [field]: value } }));

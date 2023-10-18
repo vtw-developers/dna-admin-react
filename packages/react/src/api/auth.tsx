@@ -26,13 +26,6 @@ export async function signIn(username: string, password: string, rememberMe: boo
             lockedUser: true,
             message: 'Locked User'
           };
-        } else if (error.response.data.message === 'duplicateLogin') {
-          return {
-            isOk: false,
-            lockedUser: false,
-            duplicateLogin: true,
-            message: 'DuplicateLogin User',
-          };
         } else {
           return {
             isOk: false,
@@ -40,32 +33,6 @@ export async function signIn(username: string, password: string, rememberMe: boo
             message: 'Incorrect Information',
           };
         }
-      });
-  } catch {
-    return {
-      isOk: false,
-      message: 'Authentication failed',
-    };
-  }
-}
-
-export async function signInAgain(username: string, password: string, rememberMe: boolean) {
-  try {
-    const requestData = {
-      username, password, rememberMe
-    };
-    return axios.post('/dna/admin/auth/signinagain', requestData)
-      .then((response: any) => {
-        if (response.data.accessToken) {
-          localStorage.setItem('user', JSON.stringify(response.data));
-        }
-        return {
-          isOk: true,
-          data: getUser(),
-        };
-      })
-      .catch((error) => {
-        console.log(error.response);
       });
   } catch {
     return {
