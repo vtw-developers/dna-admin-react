@@ -1,0 +1,23 @@
+extend type Query {
+    containers: [Container]
+}
+
+extend type Mutation {
+    createContainer(container: ContainerInput): ID
+}
+
+type Container {
+    id: ID
+    name: String
+    type: String
+    hostname: String
+    parentId: ID
+}
+
+input ContainerInput {
+    id: ID
+    name: String
+    type: String
+    hostname: String
+    parentId: ID
+}
