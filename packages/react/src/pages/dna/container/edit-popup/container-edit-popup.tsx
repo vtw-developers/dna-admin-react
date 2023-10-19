@@ -103,6 +103,9 @@ export const ContainerEditPopup = ({
         })
         .then(() => {
           onSave && onSave();
+        })
+        .catch((result: any) => {
+          notify(result.graphQLErrors[0].message, 'error', 2500);
         });
     }
   }, [container]);
