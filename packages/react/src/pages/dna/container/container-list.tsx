@@ -31,7 +31,7 @@ export const ContainerList = () => {
         store: new CustomStore({
           key: 'id',
           load: () => {
-            const containers = apollo
+            return apollo
               .query({
                 query: gql`
                   query containers {
@@ -46,16 +46,11 @@ export const ContainerList = () => {
                 `,
               })
               .then((result: any) => {
-                console.log(result.data.containers);
-                const servers = result.data.containers;
-                if (servers) {
-                  const items: any[] = servers.filter((server) => server.type === 'GROUP');
-                  setParentContainer(items);
-                }
+                const parent = result.data.containers.filter((container) => container.type === 'GROUP');
+                setParentContainer(parent);
                 return result.data.containers;
               });
-            return containers;
-          },
+          }
         }),
       })
     );
@@ -110,6 +105,11 @@ export const ContainerList = () => {
   const onSelectionChanged = useCallback((e) => {
     const selectedRowsData = e.selectedRowsData[0];
     setSelectedItem(selectedRowsData);
+  }, []);
+
+  const calculateDisplayValue = useCallback((data) => {
+    if (data.type === 'SINGLE') return '단독';
+    return '그룹';
   }, []);
 
   return (
@@ -175,7 +175,7 @@ export const ContainerList = () => {
         <Selection mode='single' />
         <Editing mode='popup' />
         <Column dataField='name' caption='이름' />
-        <Column dataField='type' caption='유형' />
+        <Column dataField='type' caption='유형' calculateDisplayValue={calculateDisplayValue} />
         <Column dataField='hostname' />
       </TreeList>
       <ContainerEditPopup

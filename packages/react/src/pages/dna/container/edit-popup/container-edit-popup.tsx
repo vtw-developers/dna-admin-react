@@ -43,12 +43,12 @@ export const ContainerEditPopup = ({
   };
 
   const types = [
-    { id: 'GROUP', name: 'Group' },
-    { id: 'SINGLE', name: 'Single' },
+    { id: 'GROUP', name: '그룹' },
+    { id: 'SINGLE', name: '단독' },
   ];
 
   useEffect(() => {
-    if (type === '생성') {
+    if (type == '생성') {
       setContainer({ ...newContainer });
     } else {
       setContainer({ ...selectedItem });
@@ -68,7 +68,7 @@ export const ContainerEditPopup = ({
   }, []);
 
   const save = useCallback(() => {
-    if (type === '생성') {
+    if (type == '생성') {
       apollo
         .mutate({
           mutation: gql`
@@ -86,8 +86,7 @@ export const ContainerEditPopup = ({
           reset();
         })
         .catch((result: any) => {
-          console.log(result);
-          notify('서버 이름이 이미 존재합니다.', 'error', 2500);
+          notify(result.graphQLErrors[0].message, 'error', 2500);
         });
     } else {
       apollo
