@@ -14,12 +14,12 @@ import {
   BulletinBoardList,
   BulletinBoardDetail,
   NewPost,
+  ApplicationList
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
 import { MenuManage } from './pages/dna/manage/menu/menu-manage';
 import { ProgramManage } from './pages/dna/manage/program/program-manage';
-import { ApplicationList } from './pages/dna/sample/application/application-list';
 import { ContainerList } from './pages/dna/container/container-list';
 
 const routes = [

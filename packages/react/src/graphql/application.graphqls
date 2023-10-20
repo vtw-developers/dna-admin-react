@@ -1,0 +1,29 @@
+extend type Query {
+    apps(page: Int, size: Int, sortBy: String, sortDir: String): ApplicationPage
+    app(name: String): Application
+}
+
+extend type Mutation {
+    createApp(app: ApplicationInput): Application
+    updateApp(newOne: ApplicationInput): Application
+    deleteApp(name: String): Application
+}
+
+type Application {
+    id: ID
+    name: String
+    container: Container
+    port: String
+}
+
+input ApplicationInput {
+    id: ID
+    name: String
+    container: ContainerInput
+    port: String
+}
+
+type ApplicationPage {
+    totalElements: Int
+    content: [Application]
+}

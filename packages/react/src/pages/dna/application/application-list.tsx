@@ -2,33 +2,37 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './application-list.scss';
 import DataGrid, {
   Column,
-  ColumnChooser,
   HeaderFilter,
   Item,
-  LoadPanel,
   Pager,
   Paging,
   Scrolling,
   SearchPanel,
-  Selection,
   Sorting,
   Toolbar,
 } from 'devextreme-react/data-grid';
 import Button from 'devextreme-react/button';
-import { Contact } from '../../../../types/crm-contact';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
-import { PageableService } from '../../util/pageable';
-import { apollo } from '../../../../graphql-apollo';
+import { PageableService } from '../util/pageable';
+import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { ApplicationEditPopup } from './edit-popup/application-edit-popup';
+import { confirm } from 'devextreme/ui/dialog';
 
 const pageableService = new PageableService();
 
 export const ApplicationList = () => {
-  const [gridDataSource, setGridDataSource] =
-    useState<DataSource<Contact[], string>>();
+  const [gridDataSource, setGridDataSource] = useState<DataSource>();
   const [popupVisible, setPopupVisible] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+  const newApp: any = {
+    id: '',
+    name: '',
+    container: {},
+    port: ''
+  };
+  const [app, setApp] = useState<any>(newApp);
   const gridRef = useRef<DataGrid>(null);
 
   useEffect(() => {
@@ -38,30 +42,32 @@ export const ApplicationList = () => {
           key: 'id',
           load: (loadOptions) => {
             const pageable = pageableService.getPageable(loadOptions);
-
             const page$ = apollo
               .query({
                 query: gql`
-                  query employees(
+                  query apps(
                     $page: Int = 0
-                    $size: Int = 10
+                    $size: Int = 100000
                     $sortBy: String = "id"
                     $sortDir: String = "asc"
-                    $filter: String = ""
                   ) {
-                    employees(
+                    apps(
                       page: $page
                       size: $size
                       sortBy: $sortBy
                       sortDir: $sortDir
-                      filter: $filter
                     ) {
                       totalElements
                       content {
                         id
                         name
-                        gender
-                        birthDate
+                        container {
+                            id
+                            name
+                            type
+                            hostname
+                        }
+                        port
                       }
                     }
                   }
@@ -71,12 +77,10 @@ export const ApplicationList = () => {
                   size: pageable.size,
                   sortBy: pageable.sortBy,
                   sortDir: pageable.sortDir,
-                  filter: pageable.filter,
                 },
               })
               .then((page: any) => {
-                console.log(page);
-                return pageableService.transformPage(page.data.employees);
+                return pageableService.transformPage(page.data.apps);
               });
             return page$;
           },
@@ -89,10 +93,6 @@ export const ApplicationList = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const onAddClick = useCallback(() => {
-    setPopupVisible(true);
-  }, []);
-
   const refresh = useCallback(() => {
     gridRef.current?.instance.refresh();
   }, []);
@@ -101,27 +101,77 @@ export const ApplicationList = () => {
     refresh();
   }, []);
 
+  const reset = useCallback(() => {
+    setApp({ ...newApp });
+  }, []);
+
+  useEffect(() => {
+    console.log(app);
+  }, [app]);
+
+  const onRowClick = (e) => {
+    gridRef?.current?.instance.selectRowsByIndexes(e.rowIndex);
+    const value = e.data;
+    if (value !== undefined) {
+      if (value.name === app.name) {
+        gridRef?.current?.instance.clearSelection();
+        setIsSelected(false);
+        reset();
+      } else {
+        setApp(value);
+        setIsSelected(true);
+      }
+    }
+  };
+
+  const remove = () => {
+    const result = confirm('해당 어플리케이션을 삭제하시겠습니까?', '어플리케이션 삭제');
+    result.then(dialogResult => {
+      if (dialogResult) {
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation deleteApp($name: String) {
+                deleteApp(name: $name) {
+                  id
+                  name
+                  container {
+                    id
+                    name
+                    type
+                    hostname
+                  }
+                  port
+                }
+              }
+            `,
+            variables: {
+              name: app.name,
+            },
+          })
+          .then((result: any) => {
+            console.log(result);
+            onSave && onSave();
+            reset();
+            setIsSelected(false);
+          });
+      }
+    });
+  };
+
   return (
     <div className='view crm-contact-list'>
-      <div className='view-wrapper view-wrapper-contact-list'>
+      <div className='view-wrapper view-wrapper-contact-list app-list'>
         <DataGrid
           className='grid'
           noDataText=''
-          focusedRowEnabled
           height='100%'
           dataSource={gridDataSource}
           allowColumnReordering
           ref={gridRef}
-          remoteOperations
+          onRowClick={onRowClick}
         >
-          <LoadPanel showPane={false} />
           <SearchPanel visible placeholder='검색...' />
-          <ColumnChooser enabled />
-          <Selection
-            selectAllMode='allPages'
-            showCheckBoxesMode='always'
-            mode='multiple'
-          />
           <HeaderFilter visible />
           <Sorting mode='multiple' />
           <Scrolling rowRenderingMode='virtual' />
@@ -135,16 +185,36 @@ export const ApplicationList = () => {
           />
           <Toolbar>
             <Item location='before'>
-              <div className='grid-header'>애플리케이션 목록</div>
+              <div className='grid-header'>어플리케이션 목록</div>
             </Item>
             <Item location='after' locateInMenu='auto'>
-              <Button
-                icon='plus'
-                text='애플리케이션 생성'
-                type='default'
-                stylingMode='contained'
-                onClick={onAddClick}
-              />
+              <div className='button'>
+                <Button
+                  text='어플리케이션 생성'
+                  icon='plus'
+                  type='success'
+                  className='gridButton create'
+                  stylingMode='contained'
+                  visible={!isSelected}
+                  onClick={changePopupVisibility}
+                />
+                <Button
+                  text='수정'
+                  icon='edit'
+                  type='default'
+                  className='gridButton update'
+                  visible={isSelected}
+                  onClick={changePopupVisibility}
+                />
+                <Button
+                  text='삭제'
+                  icon='clearsquare'
+                  type='danger'
+                  className='gridButton delete'
+                  visible={isSelected}
+                  onClick={remove}
+                />
+              </div>
             </Item>
             <Item
               location='after'
@@ -162,20 +232,19 @@ export const ApplicationList = () => {
             <Item location='after' locateInMenu='auto'>
               <div className='separator' />
             </Item>
-            <Item name='exportButton' />
-            <Item location='after' locateInMenu='auto'>
-              <div className='separator' />
-            </Item>
-            <Item name='columnChooserButton' locateInMenu='auto' />
             <Item name='searchPanel' locateInMenu='auto' />
           </Toolbar>
-          <Column dataField='container' caption='컨테이너' minWidth={150} />
+          <Column dataField='container.name' caption='컨테이너' minWidth={150} />
           <Column dataField='name' caption='애플리케이션명' minWidth={150} />
+          <Column dataField='port' caption='포트번호' minWidth={150} />
         </DataGrid>
         <ApplicationEditPopup
           visible={popupVisible}
-          setVisible={changePopupVisibility}
+          setVisible={setPopupVisible}
           onSave={onSave}
+          app={app}
+          setApp={setApp}
+          isSelected={isSelected}
         />
       </div>
     </div>

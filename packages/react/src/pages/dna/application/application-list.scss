@@ -1,4 +1,4 @@
-@use '../../../../variables.scss' as *;
+@use '../../../variables.scss' as *;
 @use 'sass:math';
 
 .view.crm-contact-list {
@@ -65,5 +65,29 @@
         margin-left: 11px;
       }
     }
+  }
+}
+
+.app-list {
+  .button {
+    .gridButton {
+      margin-right: 7px;
+    }
+
+    .create {
+      background-color: #396493;
+    }
+
+    .update {
+      background-color: #08b000;
+    }
+
+    .delete {
+      background-color: #e00000;
+    }
+  }
+
+  .dx-row-focused {
+    background-color: white !important;
   }
 }

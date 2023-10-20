@@ -43,8 +43,8 @@ export const FormPopup = ({
 
   const onSaveClick = useCallback(() => {
     // if (!validationGroup.current?.instance.validate().isValid) return;
-    onSave && onSave();
     close();
+    onSave && onSave();
   }, [close, validationGroup]);
 
   return (

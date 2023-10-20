@@ -13,3 +13,4 @@ export { UserProfile } from './user-profile/user-profile';
 export { BulletinBoardList } from './dna/bulletin-board/bulletin-board-list/bulletin-board-list';
 export { BulletinBoardDetail } from './dna/bulletin-board/bulletin-board-detail/bulletin-board-detail';
 export { NewPost } from './dna/bulletin-board/bulletin-board-new-post/new-post';
+export { ApplicationList } from './dna/application/application-list';
