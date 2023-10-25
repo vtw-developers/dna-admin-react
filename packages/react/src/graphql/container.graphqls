@@ -1,10 +1,10 @@
 extend type Query {
-    containers: [Container]
+    containers: [ContainerView]
 }
 
 extend type Mutation {
-    createContainer(container: ContainerInput): ID
-    updateContainer(oldName: String, newOne:ContainerInput): ID
+    createContainer(containerRequest: ContainerRequest): ID
+    updateContainer(oldName: String, newOne:ContainerRequest): ID
     deleteContainer(name: String): ID
 }
 
@@ -13,7 +13,15 @@ type Container {
     name: String
     type: String
     hostname: String
-    parentId: ID
+    group: Container
+}
+
+type ContainerView {
+    id: ID
+    name: String
+    type: String
+    hostname: String
+    groupId: ID
 }
 
 input ContainerInput {
@@ -22,4 +30,12 @@ input ContainerInput {
     type: String
     hostname: String
     parentId: ID
+}
+
+input ContainerRequest {
+    id: ID
+    name: String
+    type: String
+    hostname: String
+    groupId: ID
 }
