@@ -42,7 +42,7 @@ export const ApplicationList = () => {
           key: 'id',
           load: (loadOptions) => {
             const pageable = pageableService.getPageable(loadOptions);
-            const page$ = apollo
+            const pagingApps = apollo
               .query({
                 query: gql`
                   query apps(
@@ -82,7 +82,7 @@ export const ApplicationList = () => {
               .then((page: any) => {
                 return pageableService.transformPage(page.data.apps);
               });
-            return page$;
+            return pagingApps;
           },
         }),
       })
@@ -108,15 +108,14 @@ export const ApplicationList = () => {
   const onRowClick = (e) => {
     gridRef?.current?.instance.selectRowsByIndexes(e.rowIndex);
     const value = e.data;
-    if (value !== undefined) {
-      if (value.name === app.name) {
-        gridRef?.current?.instance.clearSelection();
-        setIsSelected(false);
-        reset();
-      } else {
-        setApp(value);
-        setIsSelected(true);
-      }
+    if (value.name === app.name) {
+      gridRef?.current?.instance.clearSelection();
+      setIsSelected(false);
+      reset();
+    } else {
+      value.container = value.container?.name;
+      setApp(value);
+      setIsSelected(true);
     }
   };
 
@@ -159,7 +158,6 @@ export const ApplicationList = () => {
       <div className='view-wrapper view-wrapper-contact-list app-list'>
         <DataGrid
           className='grid'
-          noDataText=''
           height='100%'
           dataSource={gridDataSource}
           allowColumnReordering

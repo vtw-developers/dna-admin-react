@@ -40,7 +40,7 @@ export const ContainerList = () => {
                       name
                       type
                       hostname
-                      parentId
+                      groupId
                     }
                   }
                 `,
@@ -164,7 +164,7 @@ export const ContainerList = () => {
         wordWrapEnabled
         showBorders
         keyExpr='id'
-        parentIdExpr='parentId'
+        parentIdExpr='groupId'
         ref={treeListRef}
         onSelectionChanged={onSelectionChanged}
       >

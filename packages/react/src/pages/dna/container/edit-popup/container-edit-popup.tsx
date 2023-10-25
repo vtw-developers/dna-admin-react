@@ -39,7 +39,7 @@ export const ContainerEditPopup = ({
   const newContainer: any = {
     id: undefined,
     name: '',
-    parentId: undefined,
+    groupId: undefined,
   };
 
   const types = [
@@ -68,16 +68,17 @@ export const ContainerEditPopup = ({
   }, []);
 
   const save = useCallback(() => {
+    console.log(container);
     if (type == '생성') {
       apollo
         .mutate({
           mutation: gql`
-            mutation createContainer($container: ContainerInput) {
-              createContainer(container: $container)
+            mutation createContainer($containerRequest: ContainerRequest) {
+              createContainer(containerRequest: $containerRequest)
             }
           `,
           variables: {
-            container: container,
+            containerRequest: container,
           },
         })
         .then((result: any) => {
@@ -92,7 +93,7 @@ export const ContainerEditPopup = ({
       apollo
         .mutate({
           mutation: gql`
-            mutation updateContainer($oldName: String, $newOne: ContainerInput) {
+            mutation updateContainer($oldName: String, $newOne: ContainerRequest) {
                 updateContainer(oldName: $oldName, newOne: $newOne)
             }
           `,
@@ -130,6 +131,7 @@ export const ContainerEditPopup = ({
             onValueChange={updateField('type')}
             valueExpr='id'
             displayExpr='name'
+            placeholder='선택...'
           />
         </FormItem>
         {container.type == 'SINGLE' && (
@@ -137,10 +139,11 @@ export const ContainerEditPopup = ({
             <Label text='그룹' />
             <SelectBox
               items={parentContainer}
-              value={container.parentId}
-              onValueChange={updateField('parentId')}
+              value={container.groupId}
+              onValueChange={updateField('groupId')}
               valueExpr='id'
               displayExpr='name'
+              placeholder='선택...'
             />
           </FormItem>
         )}
