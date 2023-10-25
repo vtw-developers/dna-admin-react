@@ -66,6 +66,7 @@ export const ApplicationEditPopup = ({
               })
               .then((result: any) => {
                 const list = result.data.containers.filter(c => c.parentId === null);
+                console.log(list);
                 return list;
               });
             return containers;
@@ -76,8 +77,9 @@ export const ApplicationEditPopup = ({
   }, []);
 
   const updateField = (field: string) => (value) => {
+    console.log(field);
     if (field === 'container') {
-      value = containerDatasource._items.find(c => c.id === value);
+      value = containerDatasource._items.find(c => c.name === value);
     }
     setApp((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
@@ -135,7 +137,12 @@ export const ApplicationEditPopup = ({
             }
           `,
           variables: {
-            app: app,
+            app: {
+              id: '',
+              name: app.name,
+              containerName: app.container.name,
+              port: app.port
+            }
           },
         })
         .then(() => {
@@ -173,7 +180,12 @@ export const ApplicationEditPopup = ({
             }
           `,
           variables: {
-            newOne: app
+            newOne:  {
+              id: app.id,
+              name: app.name,
+              containerName: app.container.name,
+              port: app.port
+            }
           },
         })
         .then((result: any) => {
@@ -210,8 +222,8 @@ export const ApplicationEditPopup = ({
             <Label text='컨테이너' />
             <SelectBox
               dataSource={containerDatasource}
-              value={app.container.id}
-              valueExpr='id'
+              value={app.container?.name}
+              valueExpr='name'
               displayExpr='name'
               onValueChange={updateField('container')}
             />
