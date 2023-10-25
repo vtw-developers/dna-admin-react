@@ -65,7 +65,6 @@ export const ApplicationEditPopup = ({
               `,
               })
               .then((result: any) => {
-                console.log(result.data.containers);
                 const list = result.data.containers.filter(c => c.parentId === null);
                 return list;
               });
@@ -83,22 +82,18 @@ export const ApplicationEditPopup = ({
     setApp((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
-  useEffect(() => {
-    console.log(app);
-  }, [app]);
-
   const reset = useCallback(() => {
     setApp({ ...newApp });
   }, []);
 
   const save = useCallback(() => {
-    const portNumber = parseInt(app.port);
+    const portNumber = Number(app.port);
     if (app.container.name === undefined) {
       setVisible(true);
       const alert = custom({
         title: '컨테이너 없음',
         messageHtml: '컨테이너를 지정해주세요.',
-        buttons: [{ text: 'OK' }]
+        buttons: [{ text: '확인' }]
       });
       alert.show();
       return;
@@ -107,7 +102,7 @@ export const ApplicationEditPopup = ({
       const alert = custom({
         title: '이름 없음',
         messageHtml: '어플리케이션의 이름을 입력해주세요.',
-        buttons: [{ text: 'OK' }]
+        buttons: [{ text: '확인' }]
       });
       alert.show();
       return;
@@ -116,7 +111,7 @@ export const ApplicationEditPopup = ({
       const alert = custom({
         title: '포트번호 지정 오류',
         messageHtml: '숫자로 입력해주세요.',
-        buttons: [{ text: 'OK' }]
+        buttons: [{ text: '확인' }]
       });
       alert.show();
       return;
@@ -143,8 +138,7 @@ export const ApplicationEditPopup = ({
             app: app,
           },
         })
-        .then((result: any) => {
-          console.log(result);
+        .then(() => {
           onSave && onSave();
           reset();
         }).catch(error => {
@@ -154,7 +148,7 @@ export const ApplicationEditPopup = ({
             const alert = custom({
               title: '중복된 이름',
               messageHtml: '이미 존재하는 이름입니다.',
-              buttons: [{ text: 'OK' }]
+              buttons: [{ text: '확인' }]
             });
             alert.show();
             return;
@@ -193,7 +187,7 @@ export const ApplicationEditPopup = ({
             const alert = custom({
               title: '중복된 이름',
               messageHtml: '이미 존재하는 이름입니다.',
-              buttons: [{ text: 'OK' }]
+              buttons: [{ text: '확인' }]
             });
             alert.show();
             return;

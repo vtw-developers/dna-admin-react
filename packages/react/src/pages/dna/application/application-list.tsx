@@ -105,10 +105,6 @@ export const ApplicationList = () => {
     setApp({ ...newApp });
   }, []);
 
-  useEffect(() => {
-    console.log(app);
-  }, [app]);
-
   const onRowClick = (e) => {
     gridRef?.current?.instance.selectRowsByIndexes(e.rowIndex);
     const value = e.data;
@@ -149,8 +145,7 @@ export const ApplicationList = () => {
               name: app.name,
             },
           })
-          .then((result: any) => {
-            console.log(result);
+          .then(() => {
             onSave && onSave();
             reset();
             setIsSelected(false);
