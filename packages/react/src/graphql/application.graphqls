@@ -19,7 +19,7 @@ type Application {
 input ApplicationInput {
     id: ID
     name: String
-    container: ContainerInput
+    containerName: String
     port: String
 }
 
