@@ -1,12 +1,14 @@
 extend type Query {
-    menu(MenuId: ID): Menu
-    menus: [Menu]
+    menu(MenuId: ID): MenuView
+    menus: [MenuView]
 }
 
-type Menu {
+type MenuView {
     id: ID
-    parentId: ID
+    upperMenuId: ID
+    upperMenuName: String
     programId: ID
+    programName: String
     type: String
     name: String
     icon: String

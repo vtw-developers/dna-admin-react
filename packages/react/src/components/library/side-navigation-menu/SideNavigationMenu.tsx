@@ -37,7 +37,7 @@ export const SideNavigationMenu = (
               id
               name
               type
-              parentId
+              upperMenuId
               programId
               icon
             }
@@ -113,7 +113,7 @@ export const SideNavigationMenu = (
           ref={treeViewRef}
           items={menuItems}
           dataStructure='plain'
-          parentIdExpr='parentId'
+          parentIdExpr='upperMenuId'
           keyExpr='id'
           itemTemplate='itemTemplate'
           selectionMode='single'

@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './menu-manage.scss';
-import {
-  Column,
-  Editing,
-  Lookup,
-  RequiredRule,
-  TreeList,
-} from 'devextreme-react/tree-list';
+import { Column, Editing, Lookup, TreeList } from 'devextreme-react/tree-list';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 import { apollo } from '../../../../graphql-apollo';
@@ -69,14 +63,17 @@ export const MenuManage = () => {
                       id
                       name
                       type
-                      parentId
+                      upperMenuId
                       programId
+                      programName
+                      upperMenuName
                       icon
                     }
                   }
                 `,
               })
               .then((result: any) => {
+                console.log(result);
                 const menus = result.data.menus;
                 if (menus) {
                   const items: any[] = [
@@ -200,7 +197,7 @@ export const MenuManage = () => {
         wordWrapEnabled
         showBorders
         keyExpr='id'
-        parentIdExpr='parentId'
+        parentIdExpr='upperMenuId'
         ref={treeListRef}
         onSelectionChanged={onSelectionChanged}
       >
@@ -211,20 +208,11 @@ export const MenuManage = () => {
         <Selection mode='single' />
         <Editing mode='popup' />
 
-        <Column minWidth={250} dataField='name'>
-          <RequiredRule />
-        </Column>
+        <Column minWidth={250} dataField='name' />
         <Column dataField='type' width={100}>
           <Lookup dataSource={types} displayExpr='name' valueExpr='id' />
         </Column>
-        <Column dataField='programId' caption='Program'>
-          <Lookup
-            dataSource={programDataSource}
-            valueExpr='id'
-            displayExpr='name'
-          />
-          <RequiredRule />
-        </Column>
+        <Column dataField='programName' caption='Program' />
         <Column dataField='icon' />
       </TreeList>
       <MenuEditPopup

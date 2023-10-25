@@ -59,14 +59,21 @@ export const MenuEditPopup = ({
     if (type === 'Add') {
       setMenu({
         id: undefined,
-        parentId: undefined,
+        upperMenuId: undefined,
         programId: undefined,
         type: '',
         name: '',
         icon: '',
       });
     } else {
-      setMenu({ ...selectedItem });
+      setMenu({
+        id: selectedItem.id,
+        upperMenuId: selectedItem.upperMenuId,
+        programId: selectedItem.programId,
+        type: selectedItem.type,
+        name: selectedItem.name,
+        icon: selectedItem.icon,
+      });
     }
   }, [visible]);
 
@@ -83,6 +90,7 @@ export const MenuEditPopup = ({
     }
   };
   const save = useCallback(() => {
+    console.log(menu);
     if (type === 'Add') {
       apollo
         .mutate({
@@ -144,8 +152,8 @@ export const MenuEditPopup = ({
             <Label text='parentId' />
             <SelectBox
               items={parentMenu}
-              value={menu.parentId}
-              onValueChange={updateField('parentId')}
+              value={menu.upperMenuId}
+              onValueChange={updateField('upperMenuId')}
               valueExpr='id'
               displayExpr='name'
             />

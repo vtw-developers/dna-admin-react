@@ -7,7 +7,7 @@ extend type Mutation {
 input MenuInput {
     id: ID
     programId: ID
-    parentId: ID
+    upperMenuId: ID
     name: String
     type: String
     icon: String
