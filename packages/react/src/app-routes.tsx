@@ -2,8 +2,12 @@ import {
   AnalyticsDashboard,
   AnalyticsGeography,
   AnalyticsSalesReport,
+  ApplicationList,
+  BulletinBoardDetail,
+  BulletinBoardList,
   CRMContactDetails,
   CRMContactList,
+  NewPost,
   PlanningScheduler,
   PlanningTaskDetails,
   PlanningTaskList,
@@ -11,16 +15,13 @@ import {
   SignInPage,
   SignUpPage,
   UserProfile,
-  BulletinBoardList,
-  BulletinBoardDetail,
-  NewPost,
-  ApplicationList
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
 import { MenuManage } from './pages/dna/manage/menu/menu-manage';
 import { ProgramManage } from './pages/dna/manage/program/program-manage';
 import { ContainerList } from './pages/dna/container/container-list';
+import { ReservationList } from './pages/dna/sample/reservation/reservation-list';
 
 const routes = [
   {
@@ -74,6 +75,10 @@ const routes = [
   {
     path: '/employee',
     element: EmployeeList,
+  },
+  {
+    path: '/reservation',
+    element: ReservationList,
   },
   {
     path: '/application',

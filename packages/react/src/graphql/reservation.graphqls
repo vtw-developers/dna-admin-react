@@ -1,0 +1,32 @@
+extend type Query {
+    reservations(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ReservationPage
+    reservations2(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ReservationPage2
+}
+
+extend type Mutation {
+    reserveMovie(movieId: ID, audienceCount: Int): Reservation
+}
+
+type Reservation {
+    id: ID
+    movie: Movie
+    audienceCount: Int
+    fee: Int
+}
+
+type ReservationView {
+    id: ID
+    movieName: String
+    audienceCount: Int
+    fee: Int
+}
+
+type ReservationPage {
+    totalElements: Int
+    content: [ReservationView]
+}
+
+type ReservationPage2 {
+    totalElements: Int
+    content: [Reservation]
+}

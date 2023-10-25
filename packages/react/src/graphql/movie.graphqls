@@ -1,0 +1,13 @@
+extend type Query {
+    movies(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): MoviePage
+}
+
+type Movie {
+    id: ID
+    name: String
+}
+
+type MoviePage {
+    totalElements: Int
+    content: [Movie]
+}
