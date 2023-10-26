@@ -16,6 +16,7 @@ import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { ContainerEditPopup } from './edit-popup/container-edit-popup';
 import { confirm } from 'devextreme/ui/dialog';
+import notify from 'devextreme/ui/notify';
 
 export const ContainerList = () => {
   const [treeDataSource, setTreeDataSource] = useState<DataSource>();
@@ -88,6 +89,9 @@ export const ContainerList = () => {
           .then(() => {
             onSave && onSave();
             refresh();
+          })
+          .catch((result: any) => {
+            notify(result.graphQLErrors[0].message, 'error', 2500);
           });
       }
     });
