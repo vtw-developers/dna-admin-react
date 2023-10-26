@@ -65,7 +65,7 @@ export const MenuEditPopup = ({
         name: '',
         icon: '',
       });
-    } else {
+    } else if (type === 'Update') {
       setMenu({
         id: selectedItem.id,
         upperMenuId: selectedItem.upperMenuId,
