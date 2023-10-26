@@ -1,5 +1,6 @@
 extend type Query {
     containers: [ContainerView]
+    containersByType(type: String): [ContainerView]
 }
 
 extend type Mutation {

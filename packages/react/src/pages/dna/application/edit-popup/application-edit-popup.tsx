@@ -59,13 +59,13 @@ export const ApplicationEditPopup = ({
                       name
                       type
                       hostname
-                      parentId
+                      groupId
                     }
                   }
               `,
               })
               .then((result: any) => {
-                const list = result.data.containers.filter(c => c.parentId === null);
+                const list = result.data.containers.filter(c => c.groupId === null);
                 console.log(list);
                 return list;
               });
@@ -78,9 +78,9 @@ export const ApplicationEditPopup = ({
 
   const updateField = (field: string) => (value) => {
     console.log(field);
-    if (field === 'container') {
+    /*if (field === 'container') {
       value = containerDatasource._items.find(c => c.name === value);
-    }
+    }*/
     setApp((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
@@ -89,8 +89,9 @@ export const ApplicationEditPopup = ({
   }, []);
 
   const save = useCallback(() => {
+    console.log(app);
     const portNumber = Number(app.port);
-    if (app.container.name === undefined) {
+    if (app.containerName === undefined) {
       setVisible(true);
       const alert = custom({
         title: '컨테이너 없음',
@@ -140,7 +141,7 @@ export const ApplicationEditPopup = ({
             app: {
               id: '',
               name: app.name,
-              containerName: app.container.name,
+              containerName: app.containerName,
               port: app.port
             }
           },
@@ -183,7 +184,7 @@ export const ApplicationEditPopup = ({
             newOne:  {
               id: app.id,
               name: app.name,
-              containerName: app.container.name,
+              containerName: app.containerName,
               port: app.port
             }
           },
@@ -222,10 +223,10 @@ export const ApplicationEditPopup = ({
             <Label text='컨테이너' />
             <SelectBox
               dataSource={containerDatasource}
-              value={app.container?.name}
+              value={app.containerName}
               valueExpr='name'
               displayExpr='name'
-              onValueChange={updateField('container')}
+              onValueChange={updateField('containerName')}
             />
           </FormItem>
           <FormItem>

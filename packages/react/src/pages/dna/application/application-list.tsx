@@ -61,12 +61,7 @@ export const ApplicationList = () => {
                       content {
                         id
                         name
-                        container {
-                            id
-                            name
-                            type
-                            hostname
-                        }
+                        containerName
                         port
                       }
                     }
@@ -227,7 +222,7 @@ export const ApplicationList = () => {
             </Item>
             <Item name='searchPanel' locateInMenu='auto' />
           </Toolbar>
-          <Column dataField='container.name' caption='컨테이너' minWidth={150} />
+          <Column dataField='containerName' caption='컨테이너' minWidth={150} />
           <Column dataField='name' caption='애플리케이션명' minWidth={150} />
           <Column dataField='port' caption='포트번호' minWidth={150} />
         </DataGrid>

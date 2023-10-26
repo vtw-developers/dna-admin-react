@@ -1,6 +1,7 @@
 extend type Query {
     apps(page: Int, size: Int, sortBy: String, sortDir: String): ApplicationPage
     app(name: String): Application
+    findAllApps: [ApplicationView]
 }
 
 extend type Mutation {
@@ -16,6 +17,13 @@ type Application {
     port: String
 }
 
+type ApplicationView {
+    id: ID
+    name: String
+    containerName: String
+    port: String
+}
+
 input ApplicationInput {
     id: ID
     name: String
@@ -25,5 +33,5 @@ input ApplicationInput {
 
 type ApplicationPage {
     totalElements: Int
-    content: [Application]
+    content: [ApplicationView]
 }

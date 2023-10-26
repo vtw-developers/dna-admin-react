@@ -22,6 +22,7 @@ import { MenuManage } from './pages/dna/manage/menu/menu-manage';
 import { ProgramManage } from './pages/dna/manage/program/program-manage';
 import { ContainerList } from './pages/dna/container/container-list';
 import { ReservationList } from './pages/dna/sample/reservation/reservation-list';
+import { OperationTree } from './pages/dna/ops/operation-tree';
 
 const routes = [
   {
@@ -107,6 +108,10 @@ const routes = [
   {
     path: '/container-list',
     element: ContainerList,
+  },
+  {
+    path: '/operation-tree',
+    element: OperationTree,
   },
 ];
 
