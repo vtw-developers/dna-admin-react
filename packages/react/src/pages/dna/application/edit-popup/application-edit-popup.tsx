@@ -11,8 +11,6 @@ import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { TextBox } from 'devextreme-react/text-box';
 import SelectBox from 'devextreme-react/select-box';
-import DataSource from 'devextreme/data/data_source';
-import CustomStore from 'devextreme/data/custom_store';
 import { custom } from 'devextreme/ui/dialog';
 
 type Props = {
@@ -38,49 +36,41 @@ export const ApplicationEditPopup = ({
   const newApp: any = {
     id: '',
     name: '',
-    container: {},
+    containerName: '',
     port: ''
   };
   // const [isSearchDirectoryClicked, setSearchDirectoryClicked] = useState<any>(false);
-  const [containerDatasource, setContainerDatasource] = useState<any>();
+  const [containers, setContainers] = useState<any>();
+
+  const loadContainers = async() => {
+    const containerNames = await apollo
+      .query({
+        query: gql`
+          query containers {
+            containers {
+              id
+              name
+              type
+              hostname
+              groupName
+            }
+          }
+        `,
+      })
+      .then((result: any) => {
+        const list = result.data.containers.filter(c => c.groupName === null);
+        const containerNameList = list.map(c => c.name);
+        return containerNameList;
+      });
+    setContainers(containerNames);
+    return containerNames;
+  };
 
   useEffect(() => {
-    setContainerDatasource(
-      new DataSource({
-        store: new CustomStore({
-          key: 'id',
-          load: () => {
-            const containers = apollo
-              .query({
-                query: gql`
-                  query containers {
-                    containers {
-                      id
-                      name
-                      type
-                      hostname
-                      groupName
-                    }
-                  }
-              `,
-              })
-              .then((result: any) => {
-                const list = result.data.containers.filter(c => c.groupName === null);
-                console.log(list);
-                return list;
-              });
-            return containers;
-          },
-        })
-      })
-    );
+    loadContainers();
   }, []);
 
   const updateField = (field: string) => (value) => {
-    console.log(field);
-    /*if (field === 'container') {
-      value = containerDatasource._items.find(c => c.name === value);
-    }*/
     setApp((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
@@ -88,10 +78,9 @@ export const ApplicationEditPopup = ({
     setApp({ ...newApp });
   }, []);
 
-  const save = useCallback(() => {
-    console.log(app);
+  const validation = () => {
     const portNumber = Number(app.port);
-    if (app.containerName === undefined) {
+    if (app.containerName === '') {
       setVisible(true);
       const alert = custom({
         title: '컨테이너 없음',
@@ -99,7 +88,7 @@ export const ApplicationEditPopup = ({
         buttons: [{ text: '확인' }]
       });
       alert.show();
-      return;
+      return false;
     } else if (app.name === '') {
       setVisible(true);
       const alert = custom({
@@ -108,7 +97,7 @@ export const ApplicationEditPopup = ({
         buttons: [{ text: '확인' }]
       });
       alert.show();
-      return;
+      return false;
     } else if (isNaN(portNumber)) {
       setVisible(true);
       const alert = custom({
@@ -117,6 +106,12 @@ export const ApplicationEditPopup = ({
         buttons: [{ text: '확인' }]
       });
       alert.show();
+      return false;
+    }
+  };
+
+  const save = useCallback(() => {
+    if (validation() === false) {
       return;
     }
     if (!isSelected) {
@@ -138,12 +133,7 @@ export const ApplicationEditPopup = ({
             }
           `,
           variables: {
-            app: {
-              id: '',
-              name: app.name,
-              containerName: app.containerName,
-              port: app.port
-            }
+            app: app
           },
         })
         .then(() => {
@@ -181,18 +171,19 @@ export const ApplicationEditPopup = ({
             }
           `,
           variables: {
-            newOne:  {
-              id: app.id,
-              name: app.name,
-              containerName: app.containerName,
-              port: app.port
-            }
+            newOne: app
           },
         })
         .then((result: any) => {
           const updated = result.data.updateApp;
+          const updatedApp = {
+            id: updated.id,
+            name: updated.name,
+            containerName: updated.container.name,
+            port: updated.port
+          };
           onSave && onSave();
-          setApp(updated);
+          setApp(updatedApp);
         }).catch(error => {
           const cause = error.graphQLErrors[0].message;
           if (cause === 'AlreadyExistName') {
@@ -222,10 +213,8 @@ export const ApplicationEditPopup = ({
           <FormItem>
             <Label text='컨테이너' />
             <SelectBox
-              dataSource={containerDatasource}
+              dataSource={containers}
               value={app.containerName}
-              valueExpr='name'
-              displayExpr='name'
               onValueChange={updateField('containerName')}
             />
           </FormItem>

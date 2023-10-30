@@ -29,7 +29,7 @@ export const ApplicationList = () => {
   const newApp: any = {
     id: '',
     name: '',
-    container: {},
+    containerName: '',
     port: ''
   };
   const [app, setApp] = useState<any>(newApp);
@@ -108,7 +108,6 @@ export const ApplicationList = () => {
       setIsSelected(false);
       reset();
     } else {
-      value.container = value.container?.name;
       setApp(value);
       setIsSelected(true);
     }
