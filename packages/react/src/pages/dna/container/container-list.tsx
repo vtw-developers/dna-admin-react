@@ -30,7 +30,7 @@ export const ContainerList = () => {
     setTreeDataSource(
       new DataSource({
         store: new CustomStore({
-          key: 'id',
+          key: 'name',
           load: () => {
             return apollo
               .query({
@@ -41,7 +41,7 @@ export const ContainerList = () => {
                       name
                       type
                       hostname
-                      groupId
+                      groupName
                     }
                   }
                 `,
@@ -162,13 +162,12 @@ export const ContainerList = () => {
         </Item>
       </Toolbar>
       <TreeList
-        id='id'
         dataSource={treeDataSource}
         columnAutoWidth
         wordWrapEnabled
         showBorders
-        keyExpr='id'
-        parentIdExpr='groupId'
+        keyExpr='name'
+        parentIdExpr='groupName'
         ref={treeListRef}
         onSelectionChanged={onSelectionChanged}
       >

@@ -59,13 +59,13 @@ export const ApplicationEditPopup = ({
                       name
                       type
                       hostname
-                      groupId
+                      groupName
                     }
                   }
               `,
               })
               .then((result: any) => {
-                const list = result.data.containers.filter(c => c.groupId === null);
+                const list = result.data.containers.filter(c => c.groupName === null);
                 console.log(list);
                 return list;
               });

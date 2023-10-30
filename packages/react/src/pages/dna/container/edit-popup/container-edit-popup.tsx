@@ -39,7 +39,7 @@ export const ContainerEditPopup = ({
   const newContainer: any = {
     id: undefined,
     name: '',
-    groupId: undefined,
+    groupName: undefined,
   };
 
   const types = [
@@ -139,9 +139,9 @@ export const ContainerEditPopup = ({
             <Label text='그룹' />
             <SelectBox
               items={parentContainer}
-              value={container.groupId}
-              onValueChange={updateField('groupId')}
-              valueExpr='id'
+              value={container.groupName}
+              onValueChange={updateField('groupName')}
+              valueExpr='name'
               displayExpr='name'
               placeholder='선택...'
             />
