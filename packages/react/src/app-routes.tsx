@@ -15,6 +15,7 @@ import {
   SignInPage,
   SignUpPage,
   UserProfile,
+  DownloadIde
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
@@ -112,6 +113,10 @@ const routes = [
   {
     path: '/operation-tree',
     element: OperationTree,
+  },
+  {
+    path: '/download',
+    element: DownloadIde,
   },
 ];
 
