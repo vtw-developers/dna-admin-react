@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './operation-tree.scss';
 import TreeView from 'devextreme-react/tree-view';
 import { ContextMenu } from 'devextreme-react';
@@ -6,10 +6,13 @@ import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
+import { OperationDetails } from './operation-details/operation-details';
 
 export const OperationTree = () => {
   const [treeItems, setTreeItems] = useState<DataSource>();
   const [contextItems, setContextItems] = useState<any>();
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const treeViewRef = useRef<TreeView>(null);
 
   useEffect(() => {
     setTreeItems(
@@ -34,7 +37,16 @@ export const OperationTree = () => {
                 },
               })
               .then((result: any) => {
-                const items: any = [];
+                console.log(result);
+                const items: any = [
+                  {
+                    id: 'Root',
+                    name: '운영 목록',
+                    itemType: 'root',
+                    icon: 'icons/common/operation.png',
+                    expanded: true,
+                  },
+                ];
                 result.data.containersByType.forEach((e) => {
                   e.itemType = 'container';
                   items.push(convertToItem(e));
@@ -68,9 +80,8 @@ export const OperationTree = () => {
   }, []);
 
   const convertToItem = useCallback((item) => {
-    console.log(item);
     if (item.itemType === 'container') {
-      item.parentName = null;
+      item.parentName = '운영 목록';
       item.icon = 'icons/common/server.svg';
       item.expanded = true;
     } else if (item.itemType === 'application') {
@@ -81,17 +92,40 @@ export const OperationTree = () => {
     return item;
   }, []);
 
+  const onItemClick = useCallback((e) => {
+    if (e.itemData.itemType !== 'root') setSelectedItem(e.itemData);
+  }, []);
+
+  const onSave = useCallback(() => {
+    treeViewRef.current?.instance.getDataSource().load();
+  }, []);
+
   return (
     <div className='view-wrapper view-wrapper-operation-tree'>
-      <TreeView
-        id='treeView'
-        dataSource={treeItems}
-        dataStructure='plain'
-        keyExpr='name'
-        displayExpr='name'
-        parentIdExpr='parentName'
-      />
-      <ContextMenu dataSource={contextItems} target='#treeView' />
+      <div className='panels'>
+        <div className='left' style={{ borderRight: 'solid 2px lightgrey' }}>
+          <TreeView
+            id='treeView'
+            dataSource={treeItems}
+            ref={treeViewRef}
+            dataStructure='plain'
+            keyExpr='name'
+            displayExpr='name'
+            parentIdExpr='parentName'
+            onItemClick={onItemClick}
+          />
+          <ContextMenu dataSource={contextItems} target='#treeView' />
+        </div>
+        <div className='right'>
+          {selectedItem &&
+          <OperationDetails
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
+            onSave={onSave}
+          />
+          }
+        </div>
+      </div>
     </div>
   );
 };
