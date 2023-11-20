@@ -1,0 +1,82 @@
+@use "sass:color";
+@use "../sizes" as *;
+@use "../colors" as *;
+@use "../button/colors" as *;
+
+// adduse
+
+/**
+* $name 10. Tab text color
+* $type color
+*/
+$tabs-tab-color: color.change($base-text-color, $alpha: 0.54) !default;
+
+/**
+* $name 20. Selected tab text color
+* $type color
+*/
+$tabs-tab-selected-color: $base-accent !default;
+
+/**
+* $name 30. Disabled tab color
+* $type color
+*/
+$tabs-tab-disabled-color: color.change($tabs-tab-color, $alpha: 0.13) !default;
+
+/**
+* $name 40. Selected tab bottom border color
+* $type color
+*/
+$tabs-selected-tab-bottom-border-color: $base-accent !default;
+
+/**
+* $name 50. Disabled tab bottom border color
+* $type color
+*/
+$tabs-disabled-tab-bottom-border-color: null !default;
+
+/**
+* $name 60. Tab background color
+* $type color
+*/
+$tabs-tab-bg: $base-bg !default;
+$tabs-tab-icon-color: $tabs-tab-color !default;
+
+/**
+* $name 70. Selected tab icon color
+* $type color
+*/
+$tabs-tab-icon-selected-color: $tabs-tab-selected-color !default;
+
+/**
+* $name 80. Disabled tab icon color
+* $type color
+*/
+$tabs-tab-icon-disabled-color: color.change($tabs-tab-icon-color, $alpha: 0.13) !default;
+$tabs-tab-button-disabled-opacity: 0 !default;
+
+/**
+* $name 90. Hovered tab background color
+* $type color
+*/
+$tabs-hovered-tab-bg-color: color.change($base-accent, $alpha: 0.08) !default;
+
+/**
+* $name 100. Focused tab background color
+* $type color
+*/
+$tabs-focused-tab-bg-color: color.change($base-accent, $alpha: 0.12) !default;
+
+/**
+* $name 110. Active tab background color
+* $type color
+*/
+$tabs-active-tab-bg-color: color.change($base-accent, $alpha: 0.16) !default;
+
+@if $mode == "light" {
+  $tabs-disabled-tab-bottom-border-color: color.change($tabs-tab-color, $alpha: 0.13) !default;
+}
+
+@if $mode == "dark" {
+  $tabs-disabled-tab-bottom-border-color: color.change($tabs-tab-color, $alpha: 0.4) !default;
+}
