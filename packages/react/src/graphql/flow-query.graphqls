@@ -1,0 +1,10 @@
+extend type Query {
+    showFlows(project: String): [FlowView]
+}
+
+type FlowView {
+    projectName: String
+    name: String
+    type: String
+    template: String
+}

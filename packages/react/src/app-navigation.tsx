@@ -27,6 +27,10 @@ export const navigation = [
         text: '메뉴 관리',
         path: '/manage/menu',
       },
+      {
+        text: '플로우 관리',
+        path: '/manage/flow',
+      },
     ],
   },
   {

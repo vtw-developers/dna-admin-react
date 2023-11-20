@@ -7,6 +7,7 @@ import {
   BulletinBoardList,
   CRMContactDetails,
   CRMContactList,
+  DownloadIde,
   NewPost,
   PlanningScheduler,
   PlanningTaskDetails,
@@ -15,7 +16,6 @@ import {
   SignInPage,
   SignUpPage,
   UserProfile,
-  DownloadIde
 } from './pages';
 import { withNavigationWatcher } from './contexts/navigation';
 import { EmployeeList } from './pages/dna/sample/employee/employee-list';
@@ -24,6 +24,7 @@ import { ProgramManage } from './pages/dna/manage/program/program-manage';
 import { ContainerList } from './pages/dna/container/container-list';
 import { ReservationList } from './pages/dna/sample/reservation/reservation-list';
 import { OperationTree } from './pages/dna/ops/operation-tree';
+import { FlowManage } from './pages/dna/flow/flow-manage';
 
 const routes = [
   {
@@ -89,6 +90,10 @@ const routes = [
   {
     path: '/manage/menu',
     element: MenuManage,
+  },
+  {
+    path: '/manage/flow',
+    element: FlowManage,
   },
   {
     path: '/manage/program',

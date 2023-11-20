@@ -1,0 +1,4 @@
+extend type Mutation {
+    importFlow(project: String, path: String, type: String): String
+    importProject(path: String, name: String): String
+}
