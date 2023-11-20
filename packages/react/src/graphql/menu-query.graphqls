@@ -9,6 +9,7 @@ type MenuView {
     upperMenuName: String
     programId: ID
     programName: String
+    programPath: String
     type: String
     name: String
     icon: String

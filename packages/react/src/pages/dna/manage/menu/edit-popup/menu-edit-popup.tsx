@@ -90,7 +90,6 @@ export const MenuEditPopup = ({
     }
   };
   const save = useCallback(() => {
-    console.log(menu);
     if (type === 'Add') {
       apollo
         .mutate({

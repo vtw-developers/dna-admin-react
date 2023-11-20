@@ -76,16 +76,7 @@ export const MenuManage = () => {
                 console.log(result);
                 const menus = result.data.menus;
                 if (menus) {
-                  const items: any[] = [
-                    {
-                      id: undefined,
-                      parentId: undefined,
-                      programId: undefined,
-                      type: '',
-                      name: '',
-                      icon: '',
-                    },
-                  ];
+                  const items: any[] = [];
                   menus.forEach((e) => {
                     if (e.type == 'group') items.push(e);
                   });

@@ -11,8 +11,6 @@ import './SideNavigationMenu.scss';
 import * as events from 'devextreme/events';
 import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
-import { Template } from 'devextreme-react/core/template';
-import Button from 'devextreme-react/button';
 
 export const SideNavigationMenu = (
   props: React.PropsWithChildren<SideNavigationMenuProps>
@@ -25,10 +23,10 @@ export const SideNavigationMenu = (
   const [menuItems, setMenuItems] = useState<any>([]);
 
   useEffect(() => {
-    menuList();
+    reloadMenuList();
   }, []);
 
-  function menuList() {
+  function reloadMenuList() {
     apollo
       .query({
         query: gql`
@@ -39,6 +37,7 @@ export const SideNavigationMenu = (
               type
               upperMenuId
               programId
+              programPath
               icon
             }
           }
@@ -81,26 +80,16 @@ export const SideNavigationMenu = (
       return;
     }
 
+    const current = menuItems.find(e => e.programPath === currentPath);
     if (currentPath !== undefined) {
-      treeView.selectItem(currentPath);
-      treeView.expandItem(currentPath);
+      treeView.selectItem(current?.id);
+      treeView.expandItem(current?.id);
     }
 
     if (compactMode) {
       treeView.collapseAll();
     }
-  }, [currentPath, compactMode]);
-
-  const itemTemplate = useCallback((itemObj) => {
-    return (
-      <Button
-        icon={itemObj.icon}
-        stylingMode='text'
-        text={itemObj.name}
-        className='noHover'
-      />
-    );
-  }, []);
+  }, [currentPath, compactMode, menuItems]);
 
   return (
     <div
@@ -115,16 +104,14 @@ export const SideNavigationMenu = (
           dataStructure='plain'
           parentIdExpr='upperMenuId'
           keyExpr='id'
-          itemTemplate='itemTemplate'
+          displayExpr='name'
           selectionMode='single'
           focusStateEnabled={false}
           expandEvent='click'
           onItemClick={selectedItemChanged}
           onContentReady={onMenuReady}
           width='100%'
-        >
-          <Template name='itemTemplate' render={itemTemplate} />
-        </TreeView>
+        />
       </div>
     </div>
   );

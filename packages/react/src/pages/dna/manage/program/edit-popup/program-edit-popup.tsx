@@ -46,7 +46,7 @@ export const ProgramEditPopup = ({
         name: '',
         path: '',
       });
-    } else {
+    } else if (type === 'Update') {
       setProgram({ ...selectedItem });
     }
   }, [visible]);
@@ -75,6 +75,7 @@ export const ProgramEditPopup = ({
           onSave && onSave();
         });
     } else {
+      console.log(program);
       apollo
         .mutate({
           mutation: gql`
