@@ -13,6 +13,8 @@ import {
 import { apollo } from '../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { DatasourceEditPopup } from './edit-popup/datasource-edit-popup';
+import { confirm } from 'devextreme/ui/dialog';
+import notify from 'devextreme/ui/notify';
 
 export const DatasourceManage = () => {
   const [dataSources, setDataSources] = useState<any>();
@@ -52,10 +54,42 @@ export const DatasourceManage = () => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
 
-  const updateClick = useCallback(() => {
+  const onAddPopupClick = useCallback(() => {
+    setPopupVisible(true);
+    setPopupType('생성');
+  }, []);
+
+  const onUpdatePopupClick = useCallback(() => {
     setPopupVisible(true);
     setPopupType('수정');
   }, []);
+
+  const onDeletePopupClick = useCallback(() => {
+    const result = confirm('해당 데이터소스를 삭제하시겠습니까?', '데이터소스 삭제');
+    result.then((dialogResult) => {
+      console.log(dialogResult);
+      if (dialogResult) {
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation deleteDataSource($name: String) {
+                deleteDataSource(name: $name)
+              }
+            `,
+            variables: {
+              name: selectedItem.name,
+            },
+          })
+          .then(() => {
+            onSave && onSave();
+            refresh();
+          })
+          .catch((result: any) => {
+            notify(result.graphQLErrors[0].message, 'error', 2500);
+          });
+      }
+    });
+  }, [selectedItem]);
 
   const refresh = useCallback(() => {
     reloadDataSources();
@@ -69,6 +103,7 @@ export const DatasourceManage = () => {
 
   const onSelectionChanged = useCallback((e) => {
     const selectedRowsData = e.selectedRowsData[0];
+    console.log(selectedRowsData);
     setSelectedItem(selectedRowsData);
   }, []);
 
@@ -89,12 +124,27 @@ export const DatasourceManage = () => {
         </Item>
         <Item location='after' locateInMenu='auto'>
           <Button
+            icon='plus'
+            text='생성'
+            type='default'
+            stylingMode='contained'
+            onClick={onAddPopupClick}
+          />
+          <Button
             icon='edit'
             text='수정'
             type='default'
+            stylingMode='outlined'
+            disabled={!selectedItem}
+            onClick={onUpdatePopupClick}
+          />
+          <Button
+            icon='minus'
+            text='삭제'
+            type='danger'
             stylingMode='contained'
             disabled={!selectedItem}
-            onClick={updateClick}
+            onClick={onDeletePopupClick}
           />
         </Item>
         <Item
