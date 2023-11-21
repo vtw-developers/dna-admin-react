@@ -25,6 +25,7 @@ import { ContainerList } from './pages/dna/container/container-list';
 import { ReservationList } from './pages/dna/sample/reservation/reservation-list';
 import { OperationTree } from './pages/dna/ops/operation-tree';
 import { FlowManage } from './pages/dna/flow/flow-manage';
+import { DatasourceManage } from './pages/dna/datasource/datasource-manage';
 
 const routes = [
   {
@@ -94,6 +95,10 @@ const routes = [
   {
     path: '/manage/flow',
     element: FlowManage,
+  },
+  {
+    path: '/manage/datasource',
+    element: DatasourceManage,
   },
   {
     path: '/manage/program',

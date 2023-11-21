@@ -1,0 +1,29 @@
+extend type Query {
+    dataSources: [DataSource]
+}
+
+extend type Mutation {
+    updateDataSource(dataSource: DataSourceInput): ID
+}
+
+type DataSource {
+    id: ID
+    projectId: ID
+    databaseProduct: String
+    name: String
+    description: String
+    url: String
+    username: String
+    password: String
+}
+
+input DataSourceInput {
+    id: ID
+    projectId: ID
+    databaseProduct: String
+    name: String
+    description: String
+    url: String
+    username: String
+    password: String
+}
