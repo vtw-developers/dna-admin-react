@@ -94,7 +94,7 @@ const routes = [
     element: MenuManage,
   },
   {
-    path: '/flow',
+    path: '/manage/flow',
     element: FlowManage,
   },
   {
@@ -102,7 +102,7 @@ const routes = [
     element: DatasourceManage,
   },
   {
-    path: '/deploy',
+    path: '/deploy/flow',
     element: DeployFlow,
   },
   {
