@@ -34,14 +34,7 @@ export const ProjectImportPopup = ({
   const [project, setProject] = useState<any>(newProject);
 
   const updateField = (field: string) => (value) => {
-    if (field === 'type' && value === 'group') {
-      setProject((prevState) => ({
-        ...prevState,
-        ...{ [field]: value, programId: null },
-      }));
-    } else {
-      setProject((prevState) => ({ ...prevState, ...{ [field]: value } }));
-    }
+    setProject((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
   const save = useCallback(() => {
     apollo
