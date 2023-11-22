@@ -27,7 +27,7 @@ export const ProjectDeployPopup = ({
   const newProject: any = {
     app: '',
     projectName: '',
-    flowName: '',
+    flowName: [],
   };
   useEffect(() => {
     if (visible) {
@@ -97,7 +97,6 @@ export const ProjectDeployPopup = ({
             notify(result.data.deployFlows, 'error', 2000);
             return;
           }
-          console.log(result);
           onSave && onSave();
           notify(result.data.deployFlows, 'success', 2000);
         });

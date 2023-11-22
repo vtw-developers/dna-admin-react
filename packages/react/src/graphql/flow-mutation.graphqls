@@ -3,4 +3,11 @@ extend type Mutation {
     importProject(path: String, name: String): String
     deployProject(app: String, project: String): String
     deployFlows(app: String, flows: [String]): String
+    undeployFlows(flows: [deployFlowInput]): String
+}
+
+input deployFlowInput {
+    appName: String
+    flowName: String
+    deployTime: Date
 }

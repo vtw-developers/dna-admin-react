@@ -14,6 +14,7 @@ import Toolbar, { Item } from 'devextreme-react/toolbar';
 import { gql } from '@apollo/client';
 import { apollo } from '../../../../graphql-apollo';
 import { ProjectDeployPopup } from '../deploy-popup/project-deploy-popup';
+import notify from 'devextreme/ui/notify';
 
 export const DeployFlow = () => {
   const [flowList, setFlowList] = useState<any>();
@@ -27,13 +28,13 @@ export const DeployFlow = () => {
     apollo
       .query({
         query: gql`
-            query showDeployedFlows {
-                showDeployedFlows {
-                    appName
-                    deployTime
-                    flowName
-                }
+          query showDeployedFlows {
+            showDeployedFlows {
+              appName
+              deployTime
+              flowName
             }
+          }
         `,
       })
       .then((result: any) => {
@@ -51,6 +52,30 @@ export const DeployFlow = () => {
 
   const deployFlowClick = useCallback(() => {
     setPopupVisible(true);
+  }, []);
+
+  const undeployFlowClick = useCallback(() => {
+    const list = treeListRef.current?.instance.getSelectedRowsData();
+    apollo
+      .mutate({
+        mutation: gql`
+          mutation undeployFlows($flows: [deployFlowInput]) {
+            undeployFlows(flows: $flows)
+          }
+        `,
+        variables: {
+          flows: list,
+        },
+      })
+      .then((result: any) => {
+        if (result.errors) {
+          console.error(result.errors);
+          notify(result.data.undeployFlows, 'error', 2000);
+          return;
+        }
+        onSave && onSave();
+        notify(result.data.undeployFlows, 'success', 2000);
+      });
   }, []);
 
   const refresh = useCallback(() => {
@@ -75,6 +100,15 @@ export const DeployFlow = () => {
             type='default'
             stylingMode='contained'
             onClick={deployFlowClick}
+          />
+        </Item>
+        <Item location='after' locateInMenu='auto'>
+          <Button
+            icon='minus'
+            text='undeploy'
+            type='danger'
+            stylingMode='outlined'
+            onClick={undeployFlowClick}
           />
         </Item>
         <Item
@@ -105,7 +139,7 @@ export const DeployFlow = () => {
         <HeaderFilter visible />
         <Sorting mode='multiple' />
         <Scrolling rowRenderingMode='virtual' />
-        <Selection mode='none' />
+        <Selection mode='multiple' />
         <Editing mode='popup' />
 
         <Column dataField='appName' />
