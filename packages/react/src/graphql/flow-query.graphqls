@@ -14,5 +14,5 @@ type FlowView {
 type DeployedFlowView {
     appName: String
     flowName: String
-    deployTime: Date
+    deployTime: String
 }

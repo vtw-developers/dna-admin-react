@@ -144,7 +144,11 @@ export const DeployFlow = () => {
 
         <Column dataField='appName' />
         <Column dataField='flowName' />
-        <Column dataField='deployTime' />
+        <Column
+          dataField='deployTime'
+          dataType='datetime'
+          format='yyyy-MM-dd HH:mm:ss'
+        />
       </TreeList>
       <ProjectDeployPopup
         visible={popupVisible}
