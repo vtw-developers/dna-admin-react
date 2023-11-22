@@ -3,6 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
+    createDataSource(dataSource: DataSourceInput): ID
     updateDataSource(dataSource: DataSourceInput): ID
     deleteDataSource(name: String): ID
 }
