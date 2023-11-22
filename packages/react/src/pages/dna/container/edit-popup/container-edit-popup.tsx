@@ -47,6 +47,9 @@ export const ContainerEditPopup = ({
     { id: 'SINGLE', name: '단독' },
   ];
 
+  const [container, setContainer] = useState<any>(newContainer);
+  const [oldName, setOldName] = useState('');
+
   useEffect(() => {
     if (type == '생성') {
       setContainer({ ...newContainer });
@@ -55,9 +58,6 @@ export const ContainerEditPopup = ({
       setOldName(selectedItem?.name);
     }
   }, [visible]);
-
-  const [container, setContainer] = useState<any>(newContainer);
-  const [oldName, setOldName] = useState('');
 
   const updateField = (field: string) => (value) => {
     setContainer((prevState) => ({ ...prevState, ...{ [field]: value } }));
@@ -68,7 +68,6 @@ export const ContainerEditPopup = ({
   }, []);
 
   const save = useCallback(() => {
-    console.log(container);
     if (type == '생성') {
       apollo
         .mutate({
