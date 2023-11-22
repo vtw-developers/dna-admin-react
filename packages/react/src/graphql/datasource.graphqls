@@ -6,6 +6,7 @@ extend type Mutation {
     createDataSource(dataSource: DataSourceInput): ID
     updateDataSource(dataSource: DataSourceInput): ID
     deleteDataSource(name: String): ID
+    deployDataSources(app: String, dataSources: [String]): String
 }
 
 type DataSource {

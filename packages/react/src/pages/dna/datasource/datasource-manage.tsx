@@ -15,10 +15,12 @@ import { gql } from '@apollo/client';
 import { DatasourceEditPopup } from './edit-popup/datasource-edit-popup';
 import { confirm } from 'devextreme/ui/dialog';
 import notify from 'devextreme/ui/notify';
+import { DatasourceDeployPopup } from './deploy-popup/datasource-deploy-popup';
 
 export const DatasourceManage = () => {
   const [dataSources, setDataSources] = useState<any>();
   const [popupVisible, setPopupVisible] = useState(false);
+  const [deployPopupVisible, setDeployPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const treeListRef = useRef<TreeList>(null);
@@ -91,6 +93,10 @@ export const DatasourceManage = () => {
     });
   }, [selectedItem]);
 
+  const deployDataSourceClick = useCallback(() => {
+    setDeployPopupVisible(true);
+  }, []);
+
   const refresh = useCallback(() => {
     reloadDataSources();
     treeListRef.current?.instance.refresh();
@@ -146,6 +152,13 @@ export const DatasourceManage = () => {
             disabled={!selectedItem}
             onClick={onDeletePopupClick}
           />
+          <Button
+            icon='plus'
+            text='배포'
+            type='normal'
+            stylingMode='contained'
+            onClick={deployDataSourceClick}
+          />
         </Item>
         <Item
           location='after'
@@ -177,7 +190,11 @@ export const DatasourceManage = () => {
         <Editing mode='popup' />
 
         <Column dataField='name' />
-        <Column dataField='databaseProduct' caption='Product' cellRender={cellRender} />
+        <Column
+          dataField='databaseProduct'
+          caption='Product'
+          cellRender={cellRender}
+        />
         <Column dataField='url' />
         <Column dataField='username' />
       </TreeList>
@@ -186,6 +203,11 @@ export const DatasourceManage = () => {
         setVisible={changePopupVisibility}
         type={popupType}
         selectedItem={selectedItem}
+        onSave={onSave}
+      />
+      <DatasourceDeployPopup
+        visible={deployPopupVisible}
+        setVisible={setDeployPopupVisible}
         onSave={onSave}
       />
     </div>
