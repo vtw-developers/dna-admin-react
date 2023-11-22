@@ -36,8 +36,8 @@ export const OperationTree = () => {
                   type: 'GROUP',
                 },
               })
-              .then((result: any) => {
-                console.log(result);
+              .then((containerResult: any) => {
+                console.log(containerResult);
                 const items: any = [
                   {
                     id: 'Root',
@@ -47,7 +47,7 @@ export const OperationTree = () => {
                     expanded: true,
                   },
                 ];
-                result.data.containersByType.forEach((e) => {
+                containerResult.data.containersByType.forEach((e) => {
                   e.itemType = 'container';
                   items.push(convertToItem(e));
                 });
@@ -64,12 +64,29 @@ export const OperationTree = () => {
                       }
                     `,
                   })
-                  .then((result: any) => {
-                    result.data.findAllApps.forEach((e) => {
+                  .then((appResult: any) => {
+                    appResult.data.findAllApps.forEach((e) => {
                       e.itemType = 'application';
                       items.push(convertToItem(e));
                     });
-                    return items;
+                    return apollo
+                      .query({
+                        query: gql`
+                          query showDeployedFlows {
+                            showDeployedFlows {
+                              appName
+                              flowName
+                            }
+                          }
+                        `,
+                      })
+                      .then((flowResult: any) => {
+                        flowResult.data.showDeployedFlows.forEach((e) => {
+                          e.itemType = 'deployedFlow';
+                          items.push(convertToItem(e));
+                        });
+                        return items;
+                      });
                   });
               });
           },
@@ -87,6 +104,11 @@ export const OperationTree = () => {
     } else if (item.itemType === 'application') {
       item.parentName = item.containerName;
       item.icon = 'icons/common/application.svg';
+      item.expanded = true;
+    } else if (item.itemType === 'deployedFlow') {
+      item.parentName = item.appName;
+      item.name = item.flowName;
+      item.icon = 'icons/common/flow.svg';
       item.expanded = true;
     }
     return item;
@@ -117,13 +139,13 @@ export const OperationTree = () => {
           <ContextMenu dataSource={contextItems} target='#treeView' />
         </div>
         <div className='right'>
-          {selectedItem &&
-          <OperationDetails
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
-            onSave={onSave}
-          />
-          }
+          {selectedItem && (
+            <OperationDetails
+              selectedItem={selectedItem}
+              setSelectedItem={setSelectedItem}
+              onSave={onSave}
+            />
+          )}
         </div>
       </div>
     </div>
