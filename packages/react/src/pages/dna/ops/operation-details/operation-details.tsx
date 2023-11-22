@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import ScrollView from 'devextreme-react/scroll-view';
 import { Item, Toolbar } from 'devextreme-react/toolbar';
 import Button from 'devextreme-react/button';
@@ -8,16 +8,7 @@ import './operation-details.scss';
 import { ContainerForm } from '../operation-form/container-form';
 import { ApplicationForm } from '../operation-form/application-form';
 
-export const OperationDetails = ({
-  selectedItem,
-  setSelectedItem,
-  onSave
-}) => {
-
-  useEffect(() => {
-    console.log(selectedItem);
-  }, []);
-
+export const OperationDetails = ({ selectedItem, setSelectedItem, onSave }) => {
   const onClick = useCallback(() => {
     setSelectedItem(null);
   }, []);
@@ -33,15 +24,23 @@ export const OperationDetails = ({
         </Toolbar>
         <div className='panels'>
           <div className='left'>
-            {selectedItem.itemType === 'container' &&
-            <ContainerForm selectedItem={selectedItem} setSelectedItem={setSelectedItem} onSave={onSave} />
-            }
-            {selectedItem.itemType === 'application' &&
-              <ApplicationForm selectedItem={selectedItem} setSelectedItem={setSelectedItem} onSave={onSave} />
-            }
+            {selectedItem.itemType === 'container' && (
+              <ContainerForm
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                onSave={onSave}
+              />
+            )}
+            {selectedItem.itemType === 'application' && (
+              <ApplicationForm
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                onSave={onSave}
+              />
+            )}
           </div>
           <div className='right'>
-            <OperationCards />
+            <OperationCards selectedItem={selectedItem} />
           </div>
         </div>
       </div>
