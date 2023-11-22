@@ -1,0 +1,122 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import './deploy-flow.scss';
+import { Column, Editing, TreeList } from 'devextreme-react/tree-list';
+import {
+  HeaderFilter,
+  LoadPanel,
+  Scrolling,
+  Selection,
+  Sorting,
+} from 'devextreme-react/data-grid';
+import { Button } from 'devextreme-react/button';
+import Toolbar, { Item } from 'devextreme-react/toolbar';
+
+import { gql } from '@apollo/client';
+import { apollo } from '../../../../graphql-apollo';
+import { ProjectDeployPopup } from '../deploy-popup/project-deploy-popup';
+
+export const DeployFlow = () => {
+  const [flowList, setFlowList] = useState<any>();
+  const [popupVisible, setPopupVisible] = useState(false);
+  const treeListRef = useRef<TreeList>(null);
+  useEffect(() => {
+    reloadList();
+  }, []);
+
+  const reloadList = useCallback(() => {
+    apollo
+      .query({
+        query: gql`
+            query showDeployedFlows {
+                showDeployedFlows {
+                    appName
+                    deployTime
+                    flowName
+                }
+            }
+        `,
+      })
+      .then((result: any) => {
+        if (result.errors) {
+          console.error(result.errors);
+          return;
+        }
+        setFlowList(result.data.showDeployedFlows);
+      });
+  }, []);
+
+  const changePopupVisibility = useCallback(() => {
+    setPopupVisible(!popupVisible);
+  }, [popupVisible]);
+
+  const deployFlowClick = useCallback(() => {
+    setPopupVisible(true);
+  }, []);
+
+  const refresh = useCallback(() => {
+    reloadList();
+    treeListRef.current?.instance.refresh();
+  }, []);
+
+  const onSave = useCallback(() => {
+    refresh();
+  }, []);
+
+  return (
+    <div className='view-wrapper view-wrapper-menu-manage'>
+      <Toolbar>
+        <Item location='before'>
+          <span className='toolbar-header'>플로우 배포</span>
+        </Item>
+        <Item location='after' locateInMenu='auto'>
+          <Button
+            icon='plus'
+            text='deploy'
+            type='default'
+            stylingMode='contained'
+            onClick={deployFlowClick}
+          />
+        </Item>
+        <Item
+          location='after'
+          locateInMenu='auto'
+          showText='inMenu'
+          widget='dxButton'
+        >
+          <Button
+            icon='refresh'
+            text='Refresh'
+            stylingMode='text'
+            onClick={refresh}
+          />
+        </Item>
+      </Toolbar>
+      <TreeList
+        id='name'
+        dataSource={flowList}
+        columnAutoWidth
+        wordWrapEnabled
+        showBorders
+        keyExpr='flowName'
+        parentIdExpr='upperMenuId'
+        ref={treeListRef}
+      >
+        <LoadPanel showPane={false} />
+        <HeaderFilter visible />
+        <Sorting mode='multiple' />
+        <Scrolling rowRenderingMode='virtual' />
+        <Selection mode='none' />
+        <Editing mode='popup' />
+
+        <Column dataField='appName' />
+        <Column dataField='flowName' />
+        <Column dataField='deployTime' />
+      </TreeList>
+      <ProjectDeployPopup
+        visible={popupVisible}
+        setVisible={changePopupVisibility}
+        onSave={onSave}
+      />
+    </div>
+  );
+};

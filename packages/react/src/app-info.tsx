@@ -1,3 +1,3 @@
 export const appInfo = {
-  title: 'UI Template Gallery',
+  title: 'DnA Admin',
 };
