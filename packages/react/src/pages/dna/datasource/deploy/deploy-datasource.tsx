@@ -28,8 +28,6 @@ export const DeployDatasource = ({
   }, [selectedItem]);
 
   const reloadDataSource = useCallback(() => {
-    console.log('reloadDataSource');
-    console.log(selectedItem);
     apollo
       .query({
         query: gql`
@@ -159,6 +157,7 @@ export const DeployDatasource = ({
         visible={popupVisible}
         setVisible={changePopupVisibility}
         onSave={onSave}
+        appName={selectedItem.name}
       />
     </div>
   );

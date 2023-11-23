@@ -17,11 +17,13 @@ type Props = {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   onSave?: () => void;
+  appName?: any;
 };
 export const DatasourceDeployPopup = ({
   visible,
   onSave,
   setVisible,
+  appName
 }: PropsWithChildren<Props>) => {
 
   const newDeployData: any = {
@@ -35,7 +37,12 @@ export const DatasourceDeployPopup = ({
 
   useEffect(() => {
     if (visible) {
-      setDeployData(newDeployData);
+      if (appName) {
+        newDeployData.app = appName;
+        setDeployData(newDeployData);
+      } else {
+        setDeployData(newDeployData);
+      }
       findApps();
       findDataSources();
     }
@@ -120,6 +127,7 @@ export const DatasourceDeployPopup = ({
             onValueChange={updateField('app')}
             valueExpr='name'
             displayExpr='name'
+            disabled={appName}
           />
         </FormItem>
         <FormItem>
