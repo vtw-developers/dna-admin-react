@@ -64,7 +64,19 @@ export const DeployFlow = () => {
   }, []);
 
   const undeployFlowClick = useCallback(() => {
-    const list = treeListRef.current?.instance.getSelectedRowsData();
+    const getSelectedRowsData =
+      treeListRef.current?.instance.getSelectedRowsData();
+
+    const items: any = [];
+    getSelectedRowsData?.forEach((e) => {
+      const data = {
+        appName: e.appName,
+        flowName: e.flowName,
+        deployTime: e.deployTime,
+      };
+      items.push(data);
+    });
+    console.log(items);
     apollo
       .mutate({
         mutation: gql`
@@ -73,7 +85,7 @@ export const DeployFlow = () => {
           }
         `,
         variables: {
-          flows: list,
+          flows: items,
         },
       })
       .then((result: any) => {
