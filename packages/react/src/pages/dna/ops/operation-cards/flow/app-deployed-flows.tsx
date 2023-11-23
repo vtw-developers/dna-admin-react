@@ -58,30 +58,37 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
     setPopupVisible(true);
   }, []);
 
-  const undeployFlowClick = useCallback(() => {
-    const list = treeListRef.current?.instance.getSelectedRowsData();
-    apollo
-      .mutate({
-        mutation: gql`
-          mutation undeployFlows($flows: [deployFlowInput]) {
-            undeployFlows(flows: $flows)
+  const undeployFlowClick = useCallback(
+    (e) => {
+      const list = treeListRef.current?.instance.getSelectedRowsData();
+      if (list?.length == 0) {
+        e.preventDefault();
+        return;
+      }
+      apollo
+        .mutate({
+          mutation: gql`
+            mutation undeployFlows($flows: [deployFlowInput]) {
+              undeployFlows(flows: $flows)
+            }
+          `,
+          variables: {
+            flows: list,
+          },
+        })
+        .then((result: any) => {
+          if (result.errors) {
+            console.error(result.errors);
+            notify(result.data.undeployFlows, 'error', 2000);
+            return;
           }
-        `,
-        variables: {
-          flows: list,
-        },
-      })
-      .then((result: any) => {
-        if (result.errors) {
-          console.error(result.errors);
-          notify(result.data.undeployFlows, 'error', 2000);
-          return;
-        }
-        onSave();
-        reload && reload();
-        notify(result.data.undeployFlows, 'success', 2000);
-      });
-  }, [selectedItem]);
+          onSave();
+          reload && reload();
+          notify(result.data.undeployFlows, 'success', 2000);
+        });
+    },
+    [selectedItem]
+  );
 
   const refresh = useCallback(() => {
     reloadList();

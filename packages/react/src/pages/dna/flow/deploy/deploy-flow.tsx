@@ -63,10 +63,13 @@ export const DeployFlow = () => {
     setPopupVisible(true);
   }, []);
 
-  const undeployFlowClick = useCallback(() => {
+  const undeployFlowClick = useCallback((e) => {
     const getSelectedRowsData =
       treeListRef.current?.instance.getSelectedRowsData();
-
+    if (getSelectedRowsData?.length == 0) {
+      e.preventDefault();
+      return;
+    }
     const items: any = [];
     getSelectedRowsData?.forEach((e) => {
       const data = {
