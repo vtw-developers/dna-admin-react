@@ -1,6 +1,7 @@
 extend type Query {
     showFlows(project: String): [FlowView]
     showDeployedFlows: [DeployedFlowView]
+    showDeployedFlowsByAppName(appName: String): [DeployedFlowView]
     showProjects: [String]
 }
 

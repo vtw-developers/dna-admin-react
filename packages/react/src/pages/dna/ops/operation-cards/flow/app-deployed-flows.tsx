@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import './deploy-flow.scss';
+import './app-deployed-flows.scss';
 import { Column, Editing, TreeList } from 'devextreme-react/tree-list';
 import {
   HeaderFilter,
@@ -12,48 +12,43 @@ import { Button } from 'devextreme-react/button';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
 
 import { gql } from '@apollo/client';
-import { apollo } from '../../../../graphql-apollo';
-import { ProjectDeployPopup } from '../deploy-popup/project-deploy-popup';
+import { apollo } from '../../../../../graphql-apollo';
 import notify from 'devextreme/ui/notify';
+import { AppFlowDeployPopup } from './deploy-popup/app-flow-deploy-popup';
 
-export const DeployFlow = () => {
+export const AppDeployedFlows = ({ selectedItem, reload }) => {
   const [flowList, setFlowList] = useState<any>();
   const [popupVisible, setPopupVisible] = useState(false);
   const treeListRef = useRef<TreeList>(null);
+
   useEffect(() => {
     reloadList();
-  }, []);
+  }, [selectedItem]);
 
   const reloadList = useCallback(() => {
     apollo
       .query({
         query: gql`
-          query showDeployedFlows {
-            showDeployedFlows {
+          query showDeployedFlowsByAppName($appName: String) {
+            showDeployedFlowsByAppName(appName: $appName) {
               appName
               deployTime
               flowName
             }
           }
         `,
+        variables: {
+          appName: selectedItem.name,
+        },
       })
       .then((result: any) => {
         if (result.errors) {
           console.error(result.errors);
           return;
         }
-        const items: any = [];
-        result.data.showDeployedFlows.forEach((e) => {
-          items.push(convertToItem(e));
-        });
-        setFlowList(items);
+        setFlowList(result.data.showDeployedFlowsByAppName);
       });
-  }, []);
-
-  const convertToItem = useCallback((item) => {
-    item.key = `${item.appName}_${item.flowName}`;
-    return item;
-  }, []);
+  }, [selectedItem]);
 
   const changePopupVisibility = useCallback(() => {
     setPopupVisible(!popupVisible);
@@ -64,19 +59,7 @@ export const DeployFlow = () => {
   }, []);
 
   const undeployFlowClick = useCallback(() => {
-    const getSelectedRowsData =
-      treeListRef.current?.instance.getSelectedRowsData();
-
-    const items: any = [];
-    getSelectedRowsData?.forEach((e) => {
-      const data = {
-        appName: e.appName,
-        flowName: e.flowName,
-        deployTime: e.deployTime,
-      };
-      items.push(data);
-    });
-    console.log(items);
+    const list = treeListRef.current?.instance.getSelectedRowsData();
     apollo
       .mutate({
         mutation: gql`
@@ -85,7 +68,7 @@ export const DeployFlow = () => {
           }
         `,
         variables: {
-          flows: items,
+          flows: list,
         },
       })
       .then((result: any) => {
@@ -95,26 +78,24 @@ export const DeployFlow = () => {
           return;
         }
         onSave();
+        reload && reload();
         notify(result.data.undeployFlows, 'success', 2000);
       });
-  }, []);
+  }, [selectedItem]);
 
   const refresh = useCallback(() => {
     reloadList();
     treeListRef.current?.instance.refresh();
-  }, []);
+  }, [selectedItem]);
 
   const onSave = useCallback(() => {
     refresh();
-  }, []);
+  }, [selectedItem]);
 
   return (
     <div className='view-wrapper view-wrapper-menu-manage'>
       <Toolbar>
-        <Item location='before'>
-          <span className='toolbar-header'>플로우 배포</span>
-        </Item>
-        <Item location='after' locateInMenu='auto'>
+        <Item location='before' locateInMenu='auto'>
           <Button
             icon='plus'
             text='deploy'
@@ -123,7 +104,7 @@ export const DeployFlow = () => {
             onClick={deployFlowClick}
           />
         </Item>
-        <Item location='after' locateInMenu='auto'>
+        <Item location='before' locateInMenu='auto'>
           <Button
             icon='minus'
             text='undeploy'
@@ -133,7 +114,7 @@ export const DeployFlow = () => {
           />
         </Item>
         <Item
-          location='after'
+          location='before'
           locateInMenu='auto'
           showText='inMenu'
           widget='dxButton'
@@ -152,7 +133,8 @@ export const DeployFlow = () => {
         columnAutoWidth
         wordWrapEnabled
         showBorders
-        keyExpr='key'
+        keyExpr='flowName'
+        parentIdExpr='upperMenuId'
         ref={treeListRef}
       >
         <LoadPanel showPane={false} />
@@ -170,10 +152,12 @@ export const DeployFlow = () => {
           format='yyyy-MM-dd HH:mm:ss'
         />
       </TreeList>
-      <ProjectDeployPopup
+      <AppFlowDeployPopup
         visible={popupVisible}
+        appName={selectedItem.name}
         setVisible={changePopupVisibility}
         onSave={onSave}
+        reload={reload}
       />
     </div>
   );

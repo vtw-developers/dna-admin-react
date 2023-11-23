@@ -14,11 +14,7 @@ import { gql } from '@apollo/client';
 import { custom } from 'devextreme/ui/dialog';
 import { OperationToolbarForm } from '../toolbar-form/operation-toolbar-form';
 
-export const ApplicationForm = ({
-  selectedItem,
-  setSelectedItem,
-  onSave
-}) => {
+export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
   const [editing, setEditing] = useState(false);
 
   const handleEditClick = () => {
@@ -26,13 +22,12 @@ export const ApplicationForm = ({
   };
 
   const onSaveClick = ({ validationGroup }) => {
-    console.log(selectedItem);
     if (!validationGroup.validate().isValid) return;
     const app = {
       id: selectedItem.id,
       name: selectedItem.name,
       containerName: selectedItem.containerName,
-      port: selectedItem.port
+      port: selectedItem.port,
     };
     apollo
       .mutate({

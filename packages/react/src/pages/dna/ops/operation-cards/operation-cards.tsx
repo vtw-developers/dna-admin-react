@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import TabPanel from 'devextreme-react/tab-panel';
-import { DeployFlow } from '../../flow/deploy/deploy-flow';
+import { AppDeployedFlows } from './flow/app-deployed-flows';
 
-export const OperationCards = ({ selectedItem }) => {
+export const OperationCards = ({ selectedItem, onSave }) => {
   const [tabs, setTabs] = useState<any>([]);
   const [selectedIndex, setSelectedIndex] = useState<any>(0);
 
@@ -18,7 +18,7 @@ export const OperationCards = ({ selectedItem }) => {
   const tabPanelItem = useCallback(
     (e) => {
       if (e === 'Flows') {
-        return <DeployFlow />;
+        return <AppDeployedFlows selectedItem={selectedItem} reload={onSave} />;
       }
       return <></>;
     },
