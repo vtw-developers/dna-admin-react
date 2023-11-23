@@ -1,0 +1,11 @@
+extend type Query {
+    showSchedules: [ScheduleView]
+}
+
+type ScheduleView {
+    app: String
+    flow: String
+    cronExpr: String
+    status: String
+}
+

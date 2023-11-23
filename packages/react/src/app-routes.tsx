@@ -27,6 +27,7 @@ import { OperationTree } from './pages/dna/ops/operation-tree';
 import { FlowManage } from './pages/dna/flow/flow-manage';
 import { DeployFlow } from './pages/dna/flow/deploy/deploy-flow';
 import { DatasourceManage } from './pages/dna/datasource/datasource-manage';
+import { ScheduleFlow } from './pages/dna/flow/schedule/schedule-flow';
 
 const routes = [
   {
@@ -132,6 +133,10 @@ const routes = [
   {
     path: '/download',
     element: DownloadIde,
+  },
+  {
+    path: '/schedule',
+    element: ScheduleFlow,
   },
 ];
 
