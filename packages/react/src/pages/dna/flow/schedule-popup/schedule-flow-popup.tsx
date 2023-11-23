@@ -32,13 +32,15 @@ export const ScheduleFlowPopup = ({
   const [flows, setFlows] = useState<any>();
 
   const updateField = (field: string) => (value) => {
+    if (field === 'app') {
+      findFlows(value);
+    }
     setSchedule((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
   useEffect(() => {
     if (visible) {
       findApps();
-      findFlows();
     }
   }, [visible]);
 
@@ -56,31 +58,35 @@ export const ScheduleFlowPopup = ({
       .then((result: any) => {
         if (result.errors) {
           console.error(result.errors);
-          notify(result.data.findAllApps, 'error', 2000);
+          notify('Find Apps Error', 'error', 2000);
           return;
         }
         setApps(result.data.findAllApps);
       });
   }, []);
 
-  const findFlows = useCallback(() => {
+  const findFlows = useCallback((appName) => {
     apollo
       .query({
         query: gql`
-          query showFlows {
-            showFlows {
-              name
+          query showDeployedFlowsByAppName($appName: String) {
+            showDeployedFlowsByAppName(appName: $appName) {
+              flowName
             }
           }
-      `,
+          `,
+        variables: {
+          appName: appName,
+        }
       })
       .then((result: any) => {
+        const deployedFlows = result.data.showDeployedFlowsByAppName;
         if (result.errors) {
           console.error(result.errors);
-          notify(result.data.showFlows, 'error', 2000);
+          notify('Find DeployedFlows Error', 'error', 2000);
           return;
         }
-        setFlows(result.data.showFlows);
+        setFlows(deployedFlows);
       });
   }, []);
 
@@ -109,8 +115,8 @@ export const ScheduleFlowPopup = ({
             items={flows}
             value={schedule?.flow}
             onValueChange={updateField('flow')}
-            valueExpr='name'
-            displayExpr='name'
+            valueExpr='flowName'
+            displayExpr='flowName'
             disabled={!isCreateMode && !isRunFlow}
           />
         </FormItem>
