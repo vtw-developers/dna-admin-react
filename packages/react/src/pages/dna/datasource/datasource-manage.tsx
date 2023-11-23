@@ -47,7 +47,6 @@ export const DatasourceManage = () => {
         `,
       })
       .then((result: any) => {
-        console.log(result);
         setDataSources(result.data.dataSources);
       });
   }
@@ -55,6 +54,10 @@ export const DatasourceManage = () => {
   const changePopupVisibility = useCallback(() => {
     setPopupVisible(!popupVisible);
   }, [popupVisible]);
+
+  const changeDeployPopupVisibility = useCallback(() => {
+    setDeployPopupVisible(!deployPopupVisible);
+  }, [deployPopupVisible]);
 
   const onAddPopupClick = useCallback(() => {
     setPopupVisible(true);
@@ -69,7 +72,6 @@ export const DatasourceManage = () => {
   const onDeletePopupClick = useCallback(() => {
     const result = confirm('해당 데이터소스를 삭제하시겠습니까?', '데이터소스 삭제');
     result.then((dialogResult) => {
-      console.log(dialogResult);
       if (dialogResult) {
         apollo
           .mutate({
@@ -97,6 +99,11 @@ export const DatasourceManage = () => {
     setDeployPopupVisible(true);
   }, []);
 
+  /*const undeployDataSourceClick = useCallback(() => {
+    const list = treeListRef.current?.instance.getSelectedRowsData();
+    console.log(list);
+  }, []);*/
+
   const refresh = useCallback(() => {
     reloadDataSources();
     treeListRef.current?.instance.refresh();
@@ -109,7 +116,6 @@ export const DatasourceManage = () => {
 
   const onSelectionChanged = useCallback((e) => {
     const selectedRowsData = e.selectedRowsData[0];
-    console.log(selectedRowsData);
     setSelectedItem(selectedRowsData);
   }, []);
 
@@ -159,6 +165,13 @@ export const DatasourceManage = () => {
             stylingMode='contained'
             onClick={deployDataSourceClick}
           />
+          {/*<Button
+            icon='minus'
+            text='배포 취소'
+            type='normal'
+            stylingMode='outlined'
+            onClick={undeployDataSourceClick}
+          />*/}
         </Item>
         <Item
           location='after'
@@ -207,7 +220,7 @@ export const DatasourceManage = () => {
       />
       <DatasourceDeployPopup
         visible={deployPopupVisible}
-        setVisible={setDeployPopupVisible}
+        setVisible={changeDeployPopupVisibility}
         onSave={onSave}
       />
     </div>

@@ -1,5 +1,6 @@
 extend type Query {
     dataSources: [DataSource]
+    deployedDataSources(app: String): [DeployedDataSourceView]
 }
 
 extend type Mutation {
@@ -7,6 +8,7 @@ extend type Mutation {
     updateDataSource(dataSource: DataSourceInput): ID
     deleteDataSource(name: String): ID
     deployDataSources(app: String, dataSources: [String]): String
+    undeployDataSources(dataSources: [deployDataSourceInput]): String
 }
 
 type DataSource {
@@ -20,6 +22,12 @@ type DataSource {
     password: String
 }
 
+type DeployedDataSourceView {
+    appName: String
+    dataSourceName: String
+    deployTime: String
+}
+
 input DataSourceInput {
     id: ID
     projectId: ID
@@ -29,4 +37,10 @@ input DataSourceInput {
     url: String
     username: String
     password: String
+}
+
+input deployDataSourceInput {
+    appName: String
+    dataSourceName: String
+    deployTime: String
 }

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import TabPanel from 'devextreme-react/tab-panel';
+import { DeployDatasource } from '../../datasource/deploy/deploy-datasource';
 import { AppDeployedFlows } from './flow/app-deployed-flows';
 
 export const OperationCards = ({ selectedItem, onSave }) => {
@@ -19,6 +20,8 @@ export const OperationCards = ({ selectedItem, onSave }) => {
     (e) => {
       if (e === 'Flows') {
         return <AppDeployedFlows selectedItem={selectedItem} reload={onSave} />;
+      } else if (e === 'DataSources') {
+        return <DeployDatasource selectedItem={selectedItem} />;
       }
       return <></>;
     },
