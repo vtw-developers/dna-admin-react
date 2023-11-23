@@ -42,8 +42,17 @@ export const DeployFlow = () => {
           console.error(result.errors);
           return;
         }
-        setFlowList(result.data.showDeployedFlows);
+        const items: any = [];
+        result.data.showDeployedFlows.forEach((e) => {
+          items.push(convertToItem(e));
+        });
+        setFlowList(items);
       });
+  }, []);
+
+  const convertToItem = useCallback((item) => {
+    item.key = `${item.appName}_${item.flowName}`;
+    return item;
   }, []);
 
   const changePopupVisibility = useCallback(() => {
@@ -131,8 +140,7 @@ export const DeployFlow = () => {
         columnAutoWidth
         wordWrapEnabled
         showBorders
-        keyExpr='flowName'
-        parentIdExpr='upperMenuId'
+        keyExpr='key'
         ref={treeListRef}
       >
         <LoadPanel showPane={false} />
