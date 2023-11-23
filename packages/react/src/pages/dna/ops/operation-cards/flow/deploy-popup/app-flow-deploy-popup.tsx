@@ -4,27 +4,32 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { FormPopup } from '../../../../components';
-import { getSizeQualifier } from '../../../../utils/media-query';
 import Form, { Item as FormItem, Label } from 'devextreme-react/form';
-import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import notify from 'devextreme/ui/notify';
 import SelectBox from 'devextreme-react/select-box';
 import { RadioGroup, TagBox } from 'devextreme-react';
+import { apollo } from '../../../../../../graphql-apollo';
+import { FormPopup } from '../../../../../../components';
+import { getSizeQualifier } from '../../../../../../utils/media-query';
 
 type Props = {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   onSave?: () => void;
+  appName: string;
+  reload?: () => void;
 };
 
-export const ProjectDeployPopup = ({
+export const AppFlowDeployPopup = ({
   visible,
   onSave,
+  appName,
   setVisible,
+  reload,
 }: PropsWithChildren<Props>) => {
   const newProject: any = {
+    app: appName,
     projectName: '',
     flowName: [],
   };
@@ -72,6 +77,7 @@ export const ProjectDeployPopup = ({
             return;
           }
           onSave && onSave();
+          reload && reload();
           notify(result.data.deployProject, 'success', 2000);
         });
     } else {
@@ -97,10 +103,11 @@ export const ProjectDeployPopup = ({
             return;
           }
           onSave && onSave();
+          reload && reload();
           notify(result.data.deployFlows, 'success', 2000);
         });
     }
-  }, [deployData]);
+  }, [deployData, appName]);
 
   const findApps = useCallback(() => {
     apollo
@@ -138,7 +145,6 @@ export const ProjectDeployPopup = ({
           notify(result.data.showProjects, 'error', 2000);
           return;
         }
-        console.log(result.data);
         setProjects(result.data.showProjects);
       });
   }, []);
@@ -160,7 +166,6 @@ export const ProjectDeployPopup = ({
           notify(result.data.showFlows, 'error', 2000);
           return;
         }
-        console.log(result.data);
         setFlows(result.data.showFlows);
       });
   }, []);
@@ -186,6 +191,7 @@ export const ProjectDeployPopup = ({
             value={deployData.app}
             onValueChange={updateField('app')}
             valueExpr='name'
+            disabled={appName != ''}
             displayExpr='name'
           />
         </FormItem>

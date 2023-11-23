@@ -37,10 +37,10 @@ export const OperationTree = () => {
                 },
               })
               .then((containerResult: any) => {
-                console.log(containerResult);
                 const items: any = [
                   {
                     id: 'Root',
+                    key: '운영 목록',
                     name: '운영 목록',
                     itemType: 'root',
                     icon: 'icons/common/operation.png',
@@ -98,14 +98,17 @@ export const OperationTree = () => {
 
   const convertToItem = useCallback((item) => {
     if (item.itemType === 'container') {
+      item.key = item.name;
       item.parentName = '운영 목록';
       item.icon = 'icons/common/server.svg';
       item.expanded = true;
     } else if (item.itemType === 'application') {
+      item.key = item.name;
       item.parentName = item.containerName;
       item.icon = 'icons/common/application.svg';
       item.expanded = true;
     } else if (item.itemType === 'deployedFlow') {
+      item.key = `${item.appName}_${item.flowName}`;
       item.parentName = item.appName;
       item.name = item.flowName;
       item.icon = 'icons/common/flow.svg';
@@ -131,7 +134,7 @@ export const OperationTree = () => {
             dataSource={treeItems}
             ref={treeViewRef}
             dataStructure='plain'
-            keyExpr='name'
+            keyExpr='key'
             displayExpr='name'
             parentIdExpr='parentName'
             onItemClick={onItemClick}

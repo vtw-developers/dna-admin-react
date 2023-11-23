@@ -40,7 +40,7 @@ export const OperationDetails = ({ selectedItem, setSelectedItem, onSave }) => {
             )}
           </div>
           <div className='right'>
-            <OperationCards selectedItem={selectedItem} />
+            <OperationCards selectedItem={selectedItem} onSave={onSave} />
           </div>
         </div>
       </div>
