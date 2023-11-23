@@ -1,0 +1,33 @@
+.flowSchedules {
+  padding: 40px;
+
+  .gridHeader {
+    font-size: 20px;
+  }
+
+  .dx-toolbar-items-container {
+    margin-bottom: 13px;
+  }
+
+  .button {
+    .gridButton {
+      margin-right: 7px;
+    }
+
+    .onetimeStart {
+      background-color: #29537c;
+    }
+
+    .create {
+      background-color: #29537c;
+    }
+
+    .start {
+      background-color: #218c1c !important;
+    }
+
+    .stop {
+      background-color: #c92e2e;
+    }
+  }
+}

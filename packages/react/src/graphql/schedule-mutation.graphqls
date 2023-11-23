@@ -1,0 +1,10 @@
+extend type Mutation {
+    createSchedule(app: String, flow: String, cronExpr: String): String
+    updateSchedule(app: String, flow: String, cronExpr: String): String
+    deleteSchedule(app: String, flow: String): String
+    startSchedule(app: String, flow: String): String
+    stopSchedule(app: String, flow: String): String
+    runFlow(app: String, flow: String): String
+}
+
+
