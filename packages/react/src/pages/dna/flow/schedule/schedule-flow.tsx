@@ -10,15 +10,14 @@ import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
 import { confirm } from 'devextreme/ui/dialog';
 import notify from 'devextreme/ui/notify';
-import './schedule-flow.scss';
 import { ScheduleFlowPopup } from '../schedule-popup/schedule-flow-popup';
+import './schedule-flow.scss';
 
 export const ScheduleFlow = () => {
   const initSchedule = {
     app: '',
     flow: '',
     cronExpr: '10 * * * * ? *',
-    status: 'PAUSE'
   };
   const [popupVisible, setPopupVisible] = useState<any>(false);
   const [schedules, setSchedules] = useState<any>();
@@ -44,6 +43,8 @@ export const ScheduleFlow = () => {
             flow
             cronExpr
             status
+            nextFireTime
+            prevFireTime
           }
         }
       `,
@@ -204,24 +205,22 @@ export const ScheduleFlow = () => {
     });
   }
 
-  // function formatDate(startTime) {
-  //   const date = startTime.toISOString().split('T')[0];
-  //   const time = startTime.toTimeString().split(' ')[0];
-  //   return date + ' ' + time;
-  // }
-
-  // const statusCell = (data) => {
-  //   const status = data.value;
-  //   let style;
-  //   if (status === 'Running') {
-  //     style = 'running';
-  //   } else if (status === 'Stopped' || status === 'Not Started') {
-  //     style = 'stopped';
-  //   } else if (status === 'Error') {
-  //     style = 'error';
-  //   }
-  //   return <div className={style}>● {data.value}</div>;
-  // };
+  const statusCell = (data) => {
+    const status = data.value;
+    let style;
+    let state;
+    if (status === 'NORMAL' || status === 'BLOCKED') {
+      style = 'running';
+      state = 'Running';
+    } else if (status === 'PAUSED' || status === 'COMPLETE') {
+      style = 'stopped';
+      state = 'Stopped';
+    } else if (status === 'ERROR' || status === 'NONE') {
+      style = 'error';
+      state = 'Error';
+    }
+    return <div className={style}>● {state}</div>;
+  };
 
   const onRowClick = (event) => {
     if (event.data == undefined) {
@@ -306,7 +305,6 @@ export const ScheduleFlow = () => {
       <DataGrid
         dataSource={schedules}
         allowColumnResizing
-        wordWrapEnabled
         showBorders
         keyExpr={['app', 'flow']}
         ref={schedulesRef}
@@ -320,22 +318,20 @@ export const ScheduleFlow = () => {
 
         <Column dataField='app' />
         <Column dataField='flow' />
-        <Column dataField='cronExpr' />
-        <Column dataField='status' />
-        {/*  <Column*/}
-        {/*    dataField='nextFireTime'*/}
-        {/*    caption={formatMessage('NextFireTime')}*/}
-        {/*    dataType='datetime'*/}
-        {/*    format='yyyy-MM-dd hh:mm:ss'*/}
-        {/*  />*/}
-        {/*  <Column*/}
-        {/*    dataField='prevFireTime'*/}
-        {/*    caption={formatMessage('PrevFireTime')}*/}
-        {/*    dataType='datetime'*/}
-        {/*    format='yyyy-MM-dd hh:mm:ss'*/}
-        {/*    sortOrder='desc'*/}
-        {/*  />*/}
-        {/*  <Column*/}
+        <Column dataField='cronExpr' caption='Cron Expression' />
+        <Column
+          dataField='status'
+          cellRender={statusCell}
+        />
+        <Column
+          dataField='nextFireTime'
+          caption='Next FireTime'
+        />
+        <Column
+          dataField='prevFireTime'
+          caption='Prev FireTime'
+          sortOrder='desc'
+        />
       </DataGrid>
       <ScheduleFlowPopup
         visible={popupVisible}

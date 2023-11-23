@@ -41,6 +41,7 @@ export const ScheduleFlowPopup = ({
   useEffect(() => {
     if (visible) {
       findApps();
+      findFlows(schedule?.app);
     }
   }, [visible]);
 
