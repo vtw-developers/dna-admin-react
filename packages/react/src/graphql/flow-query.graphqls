@@ -2,6 +2,7 @@ extend type Query {
     showFlows(project: String): [FlowView]
     showDeployedFlows: [DeployedFlowView]
     showDeployedFlowsByAppName(appName: String): [DeployedFlowView]
+    showDeployedFlowItemsByAppName(appName: String): [DeployedFlowItems]
     showProjects: [String]
 }
 
@@ -16,4 +17,12 @@ type DeployedFlowView {
     appName: String
     flowName: String
     deployTime: String
+}
+
+type DeployedFlowItems {
+    appName: String
+    flowName: String
+    deployTime: String
+    flowType: String
+    template: String
 }

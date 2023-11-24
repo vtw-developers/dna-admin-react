@@ -63,11 +63,10 @@ export const DeployFlow = () => {
     setPopupVisible(true);
   }, []);
 
-  const undeployFlowClick = useCallback((e) => {
+  const undeployFlowClick = useCallback(() => {
     const getSelectedRowsData =
       treeListRef.current?.instance.getSelectedRowsData();
     if (getSelectedRowsData?.length == 0) {
-      e.preventDefault();
       return;
     }
     const items: any = [];
@@ -79,7 +78,6 @@ export const DeployFlow = () => {
       };
       items.push(data);
     });
-    console.log(items);
     apollo
       .mutate({
         mutation: gql`
