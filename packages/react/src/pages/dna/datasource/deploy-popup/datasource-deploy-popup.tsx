@@ -127,7 +127,7 @@ export const DatasourceDeployPopup = ({
             onValueChange={updateField('app')}
             valueExpr='name'
             displayExpr='name'
-            disabled={appName}
+            disabled={!!appName}
           />
         </FormItem>
         <FormItem>
