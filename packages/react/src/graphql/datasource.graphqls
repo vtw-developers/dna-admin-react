@@ -1,6 +1,7 @@
 extend type Query {
     dataSources: [DataSource]
     deployedDataSources(app: String): [DeployedDataSourceView]
+    containersByGroupName(groupName: String): [Container]
 }
 
 extend type Mutation {

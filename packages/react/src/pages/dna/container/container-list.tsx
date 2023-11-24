@@ -179,7 +179,7 @@ export const ContainerList = () => {
         <Editing mode='popup' />
         <Column dataField='name' caption='이름' />
         <Column dataField='type' caption='유형' calculateDisplayValue={calculateDisplayValue} />
-        <Column dataField='hostname' />
+        <Column dataField='hostname' caption='hostname' />
       </TreeList>
       <ContainerEditPopup
         visible={popupVisible}
