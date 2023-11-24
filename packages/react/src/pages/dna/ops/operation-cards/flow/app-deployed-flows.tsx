@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './app-deployed-flows.scss';
-import { Column, Editing, TreeList } from 'devextreme-react/tree-list';
+import {
+  Column,
+  Editing,
+  Selection,
+  TreeList,
+} from 'devextreme-react/tree-list';
 import {
   HeaderFilter,
   LoadPanel,
   Scrolling,
-  Selection,
   Sorting,
 } from 'devextreme-react/data-grid';
 import { Button } from 'devextreme-react/button';
@@ -29,11 +33,13 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
     apollo
       .query({
         query: gql`
-          query showDeployedFlowsByAppName($appName: String) {
-            showDeployedFlowsByAppName(appName: $appName) {
+          query showDeployedFlowItemsByAppName($appName: String) {
+            showDeployedFlowItemsByAppName(appName: $appName) {
               appName
               deployTime
               flowName
+              flowType
+              template
             }
           }
         `,
@@ -46,9 +52,35 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
           console.error(result.errors);
           return;
         }
-        setFlowList(result.data.showDeployedFlowsByAppName);
+        const items: any = [];
+        result.data.showDeployedFlowItemsByAppName.forEach((e) => {
+          items.push(convertToItem(e));
+        });
+        setFlowList(items);
       });
   }, [selectedItem]);
+
+  const convertToItem = useCallback(
+    (item) => {
+      if (item.flowName === 'General Flow') {
+        item.key = item.flowName;
+        item.expanded = true;
+      } else if (item.flowType === 'General Flow') {
+        item.key = item.flowName;
+        item.parentKey = 'General Flow';
+        item.expanded = true;
+      } else if (item.flowType === 'Templated Flow') {
+        item.key = item.flowName;
+        item.parentKey = item.template;
+        item.expanded = true;
+      } else if (item.flowType === 'Flow Template') {
+        item.key = item.flowName;
+        item.expanded = true;
+      }
+      return item;
+    },
+    [selectedItem]
+  );
 
   const changePopupVisibility = useCallback(() => {
     setPopupVisible(!popupVisible);
@@ -59,10 +91,20 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
   }, []);
 
   const undeployFlowClick = useCallback(
-    (e) => {
-      const list = treeListRef.current?.instance.getSelectedRowsData();
-      if (list?.length == 0) {
-        e.preventDefault();
+    () => {
+      const list =
+        treeListRef.current?.instance.getSelectedRowsData('leavesOnly');
+      const items: any = [];
+      list?.forEach((e) => {
+        if (e.flowName == 'General Flow') return;
+        const data = {
+          appName: e.appName,
+          flowName: e.flowName,
+          deployTime: e.deployTime,
+        };
+        items.push(data);
+      });
+      if (items?.length == 0) {
         return;
       }
       apollo
@@ -73,7 +115,7 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
             }
           `,
           variables: {
-            flows: list,
+            flows: items,
           },
         })
         .then((result: any) => {
@@ -100,7 +142,7 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
   }, [selectedItem]);
 
   return (
-    <div className='view-wrapper view-wrapper-menu-manage'>
+    <div className='view-wrapper app-deployed-flows'>
       <Toolbar>
         <Item location='before' locateInMenu='auto'>
           <Button
@@ -135,23 +177,23 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
         </Item>
       </Toolbar>
       <TreeList
-        id='name'
+        id='key'
         dataSource={flowList}
         columnAutoWidth
         wordWrapEnabled
         showBorders
-        keyExpr='flowName'
-        parentIdExpr='upperMenuId'
+        keyExpr='key'
+        parentIdExpr='parentKey'
         ref={treeListRef}
+        autoExpandAll
       >
         <LoadPanel showPane={false} />
         <HeaderFilter visible />
         <Sorting mode='multiple' />
         <Scrolling rowRenderingMode='virtual' />
-        <Selection mode='multiple' />
+        <Selection mode='multiple' recursive />
         <Editing mode='popup' />
 
-        <Column dataField='appName' />
         <Column dataField='flowName' />
         <Column
           dataField='deployTime'

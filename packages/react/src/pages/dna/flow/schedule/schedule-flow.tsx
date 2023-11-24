@@ -50,6 +50,10 @@ export const ScheduleFlow = () => {
       `,
       variables: {}
     }).then((result: any) => {
+      if (result.errors) {
+        console.error(result.errors);
+        return;
+      }
       const schedules = result.data.showSchedules;
       setSchedules(schedules);
     });
@@ -69,13 +73,13 @@ export const ScheduleFlow = () => {
 
   const onClickCreate = () => {
     setIsRunFlow(false);
-    if (schedule.flow !== '') {
+    if (schedule?.flow !== '') {
       setIsCreateMode(false);
       const schedule = schedulesRef.current.instance.getSelectedRowsData()[0];
       setSchedule(schedule);
     } else {
       setIsCreateMode(true);
-      setSchedule(initSchedule);
+      reset();
     }
     setPopupVisible(true);
   };
@@ -93,8 +97,15 @@ export const ScheduleFlow = () => {
         cronExpr: schedule.cronExpr
       }
     }).then(result => {
+      const createResult = result.data.createSchedule;
+      setIsCreateMode(true);
+      reset();
+      if (createResult.includes('[Error]')) {
+        notify(createResult, 'error', 2000);
+        return;
+      }
+      notify(createResult, 'success', 2000);
       reloadschedules();
-      notify(result.data.createSchedule, 'success', 2000);
     });
   }
 
@@ -111,15 +122,18 @@ export const ScheduleFlow = () => {
         cronExpr: schedule.cronExpr
       }
     }).then(result => {
+      const updateResult = result.data.updateSchedule;
+      if (updateResult.includes('[Error]')) {
+        notify(updateResult, 'error', 2000);
+        return;
+      }
+      notify(updateResult, 'success', 2000);
       reloadschedules();
-      notify(result.data.updateSchedule, 'success', 2000);
     });
   };
 
   const start = () => {
     if (schedulesRef.current.instance.getSelectedRowsData().length > 0) {
-      const selectedFlowId = schedulesRef.current.instance.getSelectedRowKeys()[0];
-      console.log(selectedFlowId);
       apollo.mutate<any>({
         mutation: gql`
           mutation startSchedule($app: String, $flow: String) {
@@ -131,8 +145,13 @@ export const ScheduleFlow = () => {
           flow: schedule.flow
         }
       }).then(result => {
+        const startResult = result.data.startSchedule;
+        if (startResult.includes('[Error]')) {
+          notify(startResult, 'error', 2000);
+          return;
+        }
+        notify(startResult, 'success', 2000);
         reloadschedules();
-        notify(result.data.startSchedule, 'success', 2000);
       });
     }
   };
@@ -150,8 +169,13 @@ export const ScheduleFlow = () => {
           flow: schedule.flow
         }
       }).then(result => {
+        const stopResult = result.data.stopSchedule;
+        if (stopResult.includes('[Error]')) {
+          notify(stopResult, 'error', 2000);
+          return;
+        }
+        notify(stopResult, 'success', 2000);
         reloadschedules();
-        notify(result.data.stopSchedule, 'success', 2000);
       });
     }
   };
@@ -172,10 +196,14 @@ export const ScheduleFlow = () => {
               flow: schedule.flow
             }
           }).then(result => {
+            const deleteResult = result.data.deleteSchedule;
+            if (deleteResult.includes('[Error]')) {
+              notify(deleteResult, 'error', 2000);
+              return;
+            }
+            notify(deleteResult, 'success', 2000);
+            reset();
             reloadschedules();
-            setSchedule(initSchedule);
-            setIsSelected(false);
-            notify(result.data.deleteSchedule, 'success', 2000);
           });
         }
       });
@@ -200,8 +228,13 @@ export const ScheduleFlow = () => {
         flow: schedule.flow
       }
     }).then(result => {
+      const runFlowResult = result.data.runFlow;
+      if (runFlowResult.includes('[Error]')) {
+        notify(runFlowResult, 'error', 2000);
+        return;
+      }
+      notify(runFlowResult, 'success', 2000);
       reloadschedules();
-      notify(result.data.runFlow, 'success', 2000);
     });
   }
 
@@ -231,8 +264,7 @@ export const ScheduleFlow = () => {
       if (schedule?.flow === selectedRowKey.flow &&
           schedule?.app === selectedRowKey.app) {
         schedulesRef.current.instance.clearSelection();
-        setIsSelected(false);
-        setSchedule(initSchedule);
+        reset();
       } else {
         setSchedule(event.data);
         setIsSelected(true);
@@ -241,6 +273,11 @@ export const ScheduleFlow = () => {
       setSchedule(event.data);
       setIsSelected(true);
     }
+  };
+
+  const reset = () => {
+    setSchedule(initSchedule);
+    setIsSelected(false);
   };
 
   // function convertCronExpression(cron) {
@@ -275,7 +312,6 @@ export const ScheduleFlow = () => {
             type='success'
             className='gridButton onetimeStart'
             onClick={onClickRunFlow}
-            visible={isSelected}
           />
           <Button
             text='Start'
