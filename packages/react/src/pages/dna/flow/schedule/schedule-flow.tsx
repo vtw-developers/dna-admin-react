@@ -98,9 +98,9 @@ export const ScheduleFlow = () => {
       }
     }).then(result => {
       const createResult = result.data.createSchedule;
+      setIsCreateMode(true);
+      reset();
       if (createResult.includes('[Error]')) {
-        setIsCreateMode(true);
-        reset();
         notify(createResult, 'error', 2000);
         return;
       }
