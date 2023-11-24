@@ -4,6 +4,7 @@ import { DeployDatasource } from '../../datasource/deploy/deploy-datasource';
 import { AppDeployedFlows } from './flow/app-deployed-flows';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
+import { ContainerApplications } from './application/container-applications';
 
 export const OperationCards = ({ selectedItem, onSave }) => {
   const [tabs, setTabs] = useState<any>([]);
@@ -50,6 +51,8 @@ export const OperationCards = ({ selectedItem, onSave }) => {
         return <AppDeployedFlows selectedItem={selectedItem} reload={onSave} />;
       } else if (e === 'DataSources') {
         return <DeployDatasource selectedItem={selectedItem} />;
+      } else if (e === 'Applications') {
+        return <ContainerApplications selectedItem={selectedItem} />;
       }
       return <></>;
     },

@@ -44,7 +44,6 @@ export const DeployDatasource = ({
         },
       })
       .then((result: any) => {
-        console.log(result);
         setDataSources(result.data.deployedDataSources);
       });
   }, [selectedItem]);
@@ -59,7 +58,6 @@ export const DeployDatasource = ({
 
   const undeployDataSourceClick = useCallback(() => {
     const list = treeListRef.current?.instance.getSelectedRowsData();
-    console.log(list);
     const result = confirm(`선택한 데이터소스 ${list?.length}개를 배포 취소 하시겠습니까?`, '배포 취소');
     result.then((dialogResult) => {
       if (dialogResult) {
