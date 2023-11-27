@@ -52,7 +52,7 @@ export const OperationCards = ({ selectedItem, onSave }) => {
       } else if (e === 'DataSources') {
         return <DeployDatasource selectedItem={selectedItem} />;
       } else if (e === 'Applications') {
-        return <ContainerApplications selectedItem={selectedItem} />;
+        return <ContainerApplications selectedItem={selectedItem} reload={onSave} />;
       }
       return <></>;
     },
