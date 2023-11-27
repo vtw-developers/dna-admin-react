@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataGrid, {
   HeaderFilter,
   LoadPanel, Paging, Scrolling, Selection, Sorting
@@ -11,6 +11,7 @@ import { gql } from '@apollo/client';
 import { confirm } from 'devextreme/ui/dialog';
 import notify from 'devextreme/ui/notify';
 import { ScheduleFlowPopup } from '../schedule-popup/schedule-flow-popup';
+import cronstrue from 'cronstrue';
 import './schedule-flow.scss';
 
 export const ScheduleFlow = () => {
@@ -255,7 +256,7 @@ export const ScheduleFlow = () => {
     return <div className={style}>● {state}</div>;
   };
 
-  const onRowClick = (event) => {
+  const onRowClick = useCallback((event) => {
     if (event.data == undefined) {
       return;
     }
@@ -273,11 +274,17 @@ export const ScheduleFlow = () => {
       setSchedule(event.data);
       setIsSelected(true);
     }
-  };
+  }, [schedule]);
 
   const reset = () => {
     setSchedule(initSchedule);
     setIsSelected(false);
+  };
+
+  const convertCronExpression = (cron) => {
+    require('cronstrue/locales/ko');
+    const converted = cronstrue.toString(cron.value, { locale: 'ko' });
+    return converted;
   };
 
   return (
@@ -344,7 +351,11 @@ export const ScheduleFlow = () => {
 
         <Column dataField='app' caption='어플리케이션' />
         <Column dataField='flow' caption='플로우' />
-        <Column dataField='cronExpr' caption='크론 표현식' />
+        <Column
+          dataField='cronExpr'
+          caption='크론 표현식'
+          customizeText={convertCronExpression}
+        />
         <Column
           dataField='status'
           cellRender={statusCell}
