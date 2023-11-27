@@ -63,10 +63,6 @@ export const ContainerEditPopup = ({
     setContainer((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
 
-  const reset = useCallback(() => {
-    setContainer({ ...newContainer });
-  }, []);
-
   const save = useCallback(() => {
     if (type == '생성') {
       apollo
@@ -80,10 +76,8 @@ export const ContainerEditPopup = ({
             containerRequest: container,
           },
         })
-        .then((result: any) => {
-          console.log(result);
+        .then(() => {
           onSave && onSave();
-          reset();
         })
         .catch((result: any) => {
           notify(result.graphQLErrors[0].message, 'error', 2500);

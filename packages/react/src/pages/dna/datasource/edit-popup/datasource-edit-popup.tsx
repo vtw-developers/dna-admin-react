@@ -76,8 +76,7 @@ export const DatasourceEditPopup = ({
             dataSource: dataSource,
           },
         })
-        .then((result: any) => {
-          console.log(result);
+        .then(() => {
           onSave && onSave();
           reset();
         });
@@ -93,8 +92,7 @@ export const DatasourceEditPopup = ({
             dataSource: dataSource,
           },
         })
-        .then((result: any) => {
-          console.log(result);
+        .then(() => {
           onSave && onSave();
           reset();
         });
