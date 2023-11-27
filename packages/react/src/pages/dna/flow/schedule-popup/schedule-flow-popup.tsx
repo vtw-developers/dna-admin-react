@@ -95,12 +95,12 @@ export const ScheduleFlowPopup = ({
     <FormPopup
       visible={visible}
       setVisible={setVisible}
-      title={ isRunFlow ? 'Run Flow' : isCreateMode ? 'FlowSchedule Create' : 'FlowSchedule Update' }
+      title={ isRunFlow ? '플로우 실행' : isCreateMode ? '스케줄 생성' : '스케줄 수정' }
       onSave={onSaved}
     >
       <Form className='plain-styled-form' screenByWidth={getSizeQualifier}>
         <FormItem>
-          <Label text='app name' />
+          <Label text='어플리케이션명' />
           <SelectBox
             items={apps}
             value={schedule?.app}
@@ -111,7 +111,7 @@ export const ScheduleFlowPopup = ({
           />
         </FormItem>
         <FormItem>
-          <Label text='flow name' />
+          <Label text='플로우명' />
           <SelectBox
             items={flows}
             value={schedule?.flow}
@@ -122,7 +122,7 @@ export const ScheduleFlowPopup = ({
           />
         </FormItem>
         <FormItem visible={!isRunFlow}>
-          <Label text='Cron Expression' />
+          <Label text='크론 표현식' />
           <TextBox
             value={schedule?.cronExpr}
             onValueChange={updateField('cronExpr')}

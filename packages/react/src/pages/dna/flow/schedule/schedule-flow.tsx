@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DataGrid, {
   HeaderFilter,
-  LoadPanel, Scrolling, Selection, Sorting
+  LoadPanel, Paging, Scrolling, Selection, Sorting
 } from 'devextreme-react/data-grid';
 import { Column } from 'devextreme-react/gantt';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
@@ -244,13 +244,13 @@ export const ScheduleFlow = () => {
     let state;
     if (status === 'NORMAL' || status === 'BLOCKED') {
       style = 'running';
-      state = 'Running';
+      state = '실행중';
     } else if (status === 'PAUSED' || status === 'COMPLETE') {
       style = 'stopped';
-      state = 'Stopped';
+      state = '정지됨';
     } else if (status === 'ERROR' || status === 'NONE') {
       style = 'error';
-      state = 'Error';
+      state = '오류';
     }
     return <div className={style}>● {state}</div>;
   };
@@ -280,18 +280,6 @@ export const ScheduleFlow = () => {
     setIsSelected(false);
   };
 
-  // function convertCronExpression(cron) {
-  //   const cronstrue = require('cronstrue');
-  //   require('cronstrue/locales/ko');
-  //   const locale = sessionStorage.getItem('locale');
-  //
-  //   let converted = cronstrue.toString(cron.value, { locale: 'en' });
-  //   if (locale != 'en') {
-  //     converted = cronstrue.toString(cron.value,{ locale: 'ko' });
-  //   }
-  //   return converted;
-  // }
-
   return (
     <div className='schedules view-wrapper view-wrapper-menu-manage'>
       <Toolbar>
@@ -300,21 +288,21 @@ export const ScheduleFlow = () => {
         </Item>
         <Item location='after' locateInMenu='auto'>
           <Button
-            icon='plus'
-            text={ !isSelected ? 'Create' : 'Update' }
-            type='default'
-            stylingMode='contained'
-            onClick={onClickCreate}
-          />
-          <Button
-            text='Run Flow'
+            text='플로우 실행'
             icon='video'
             type='success'
             className='gridButton onetimeStart'
             onClick={onClickRunFlow}
           />
           <Button
-            text='Start'
+            icon='plus'
+            text={ !isSelected ? '스케줄 생성' : '스케줄 수정' }
+            type='default'
+            stylingMode='contained'
+            onClick={onClickCreate}
+          />
+          <Button
+            text='실행'
             icon='video'
             type='success'
             className='gridButton start'
@@ -322,7 +310,7 @@ export const ScheduleFlow = () => {
             visible={isSelected}
           />
           <Button
-            text='Stop'
+            text='정지'
             icon='square'
             type='danger'
             className='gridButton stop'
@@ -330,7 +318,7 @@ export const ScheduleFlow = () => {
             visible={isSelected}
           />
           <Button
-            text='Delete'
+            text='삭제'
             icon='clearsquare'
             type='normal'
             onClick={deleteSchedule}
@@ -345,27 +333,30 @@ export const ScheduleFlow = () => {
         keyExpr={['app', 'flow']}
         ref={schedulesRef}
         onRowClick={onRowClick}
+        style={{ maxHeight: '700px' }}
       >
         <LoadPanel showPane={false} showIndicator={false} />
         <HeaderFilter visible />
         <Sorting mode='multiple' />
         <Scrolling rowRenderingMode='virtual' />
         <Selection mode='single' />
+        <Paging pageSize={15} />
 
-        <Column dataField='app' />
-        <Column dataField='flow' />
-        <Column dataField='cronExpr' caption='Cron Expression' />
+        <Column dataField='app' caption='어플리케이션' />
+        <Column dataField='flow' caption='플로우' />
+        <Column dataField='cronExpr' caption='크론 표현식' />
         <Column
           dataField='status'
           cellRender={statusCell}
+          caption='상태'
         />
         <Column
           dataField='nextFireTime'
-          caption='Next FireTime'
+          caption='다음 실행 일시'
         />
         <Column
           dataField='prevFireTime'
-          caption='Prev FireTime'
+          caption='최근 실행 일시'
           sortOrder='desc'
         />
       </DataGrid>
