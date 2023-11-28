@@ -67,6 +67,9 @@ export const ScheduleFlowPopup = ({
   }, []);
 
   const findFlows = useCallback((appName) => {
+    if (appName === '') {
+      return;
+    }
     apollo
       .query({
         query: gql`

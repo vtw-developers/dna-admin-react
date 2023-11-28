@@ -246,12 +246,9 @@ export const ScheduleFlow = () => {
     if (status === 'NORMAL' || status === 'BLOCKED') {
       style = 'running';
       state = '실행중';
-    } else if (status === 'PAUSED' || status === 'COMPLETE') {
+    } else if (status === 'PAUSED' || status === 'COMPLETE' || status === 'ERROR' || status === 'NONE') {
       style = 'stopped';
       state = '정지됨';
-    } else if (status === 'ERROR' || status === 'NONE') {
-      style = 'error';
-      state = '오류';
     }
     return <div className={style}>● {state}</div>;
   };
