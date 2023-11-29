@@ -19,14 +19,17 @@ import { gql } from '@apollo/client';
 import { apollo } from '../../../../../graphql-apollo';
 import notify from 'devextreme/ui/notify';
 import { AppFlowDeployPopup } from './deploy-popup/app-flow-deploy-popup';
+import { confirm } from 'devextreme/ui/dialog';
 
 export const AppDeployedFlows = ({ selectedItem, reload }) => {
   const [flowList, setFlowList] = useState<any>();
   const [popupVisible, setPopupVisible] = useState(false);
   const treeListRef = useRef<TreeList>(null);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
   useEffect(() => {
     reloadList();
+    treeListRef.current?.instance.clearSelection();
   }, [selectedItem]);
 
   const reloadList = useCallback(() => {
@@ -90,55 +93,65 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
     setPopupVisible(true);
   }, []);
 
-  const undeployFlowClick = useCallback(
-    () => {
-      const list =
-        treeListRef.current?.instance.getSelectedRowsData('leavesOnly');
-      const items: any = [];
-      list?.forEach((e) => {
-        if (e.flowName == 'General Flow') return;
-        const data = {
-          appName: e.appName,
-          flowName: e.flowName,
-          deployTime: e.deployTime,
-        };
-        items.push(data);
-      });
-      if (items?.length == 0) {
-        return;
-      }
-      apollo
-        .mutate({
-          mutation: gql`
-            mutation undeployFlows($flows: [deployFlowInput]) {
-              undeployFlows(flows: $flows)
-            }
-          `,
-          variables: {
-            flows: items,
-          },
-        })
-        .then((result: any) => {
-          if (result.errors) {
-            console.error(result.errors);
-            notify(result.data.undeployFlows, 'error', 2000);
-            return;
-          }
-          onSave();
-          reload && reload();
-          notify(result.data.undeployFlows, 'success', 2000);
+  const undeployFlowClick = useCallback(() => {
+    const list = treeListRef.current?.instance.getSelectedRowsData('leavesOnly');
+    const result = confirm(`선택한 플로우 ${list?.length}개를 배포 취소 하시겠습니까?`, '배포 취소');
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        const items: any = [];
+        list?.forEach((e) => {
+          if (e.flowName == 'General Flow') return;
+          const data = {
+            appName: e.appName,
+            flowName: e.flowName,
+            deployTime: e.deployTime,
+          };
+          items.push(data);
         });
-    },
-    [selectedItem]
-  );
+        if (items?.length == 0) {
+          return;
+        }
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation undeployFlows($flows: [deployFlowInput]) {
+                undeployFlows(flows: $flows)
+              }
+            `,
+            variables: {
+              flows: items,
+            },
+          })
+          .then((result: any) => {
+            if (result.errors) {
+              console.error(result.errors);
+              notify(result.data.undeployFlows, 'error', 2000);
+              return;
+            }
+            onSave();
+            reload && reload();
+            notify(result.data.undeployFlows, 'success', 2000);
+          });
+      }
+    });
+  }, [selectedItem]);
 
   const refresh = useCallback(() => {
     reloadList();
     treeListRef.current?.instance.refresh();
+    treeListRef.current?.instance.clearSelection();
   }, [selectedItem]);
 
   const onSave = useCallback(() => {
     refresh();
+  }, [selectedItem]);
+
+  const onSelectionChanged = useCallback((e) => {
+    if(e.selectedRowsData.length > 0) {
+      setIsSelected(true);
+    } else {
+      setIsSelected(false);
+    }
   }, [selectedItem]);
 
   return (
@@ -160,6 +173,7 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
             type='danger'
             stylingMode='outlined'
             onClick={undeployFlowClick}
+            disabled={!isSelected}
           />
         </Item>
         <Item
@@ -186,6 +200,7 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
         parentIdExpr='parentKey'
         ref={treeListRef}
         autoExpandAll
+        onSelectionChanged={onSelectionChanged}
       >
         <LoadPanel showPane={false} />
         <HeaderFilter visible />
