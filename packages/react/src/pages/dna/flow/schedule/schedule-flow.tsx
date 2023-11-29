@@ -244,7 +244,7 @@ export const ScheduleFlow = () => {
     let style;
     let state;
     if (status === 'Waiting') {
-      style = 'running';
+      style = 'waiting';
       state = '켜짐';
     } else if (status === 'Running') {
       style = 'running';
@@ -253,7 +253,7 @@ export const ScheduleFlow = () => {
       style = 'stopped';
       state = '꺼짐';
     }
-    return <div className={style}>● {state}</div>;
+    return <div className={style}><span className='spot'>● </span>{state}</div>;
   };
 
   const onRowClick = useCallback((event) => {

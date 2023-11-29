@@ -1,6 +1,10 @@
 .schedules {
   padding: 40px;
 
+  .waiting {
+    color: #3c96ce;
+  }
+
   .running {
     color: #14c000;
   }
@@ -11,5 +15,9 @@
 
   .error {
     color: red;
+  }
+
+  .spot {
+    font-size: 18px;
   }
 }
