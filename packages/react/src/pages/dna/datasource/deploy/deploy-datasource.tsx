@@ -22,9 +22,11 @@ export const DeployDatasource = ({
   const [dataSources, setDataSources] = useState<any>();
   const [popupVisible, setPopupVisible] = useState(false);
   const treeListRef = useRef<TreeList>(null);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
   useEffect(() => {
     reloadDataSource();
+    treeListRef.current?.instance.clearSelection();
   }, [selectedItem]);
 
   const reloadDataSource = useCallback(() => {
@@ -83,18 +85,24 @@ export const DeployDatasource = ({
   const refresh = useCallback(() => {
     reloadDataSource();
     treeListRef.current?.instance.refresh();
+    treeListRef.current?.instance.clearSelection();
   }, [selectedItem]);
 
   const onSave = useCallback(() => {
     refresh();
   }, [selectedItem]);
 
+  const onSelectionChanged = useCallback((e) => {
+    if(e.selectedRowsData.length > 0) {
+      setIsSelected(true);
+    } else {
+      setIsSelected(false);
+    }
+  }, [selectedItem]);
+
   return (
     <div className='view-wrapper view-wrapper-datasource-manage'>
       <Toolbar>
-        {/*<Item location='before'>
-          <span className='toolbar-header'>데이터소스 배포</span>
-        </Item>*/}
         <Item location='before' locateInMenu='auto'>
           <Button
             icon='plus'
@@ -111,6 +119,7 @@ export const DeployDatasource = ({
             type='danger'
             stylingMode='outlined'
             onClick={undeployDataSourceClick}
+            disabled={!isSelected}
           />
         </Item>
         <Item
@@ -135,6 +144,7 @@ export const DeployDatasource = ({
         showBorders
         keyExpr='dataSourceName'
         ref={treeListRef}
+        onSelectionChanged={onSelectionChanged}
       >
         <LoadPanel showPane={false} />
         <HeaderFilter visible />
