@@ -243,12 +243,15 @@ export const ScheduleFlow = () => {
     const status = data.value;
     let style;
     let state;
-    if (status === 'NORMAL' || status === 'BLOCKED') {
+    if (status === 'Waiting') {
+      style = 'running';
+      state = '켜짐';
+    } else if (status === 'Running') {
       style = 'running';
       state = '실행중';
-    } else if (status === 'PAUSED' || status === 'COMPLETE' || status === 'ERROR' || status === 'NONE') {
+    } else if (status === 'Stopped') {
       style = 'stopped';
-      state = '정지됨';
+      state = '꺼짐';
     }
     return <div className={style}>● {state}</div>;
   };
@@ -281,7 +284,8 @@ export const ScheduleFlow = () => {
   const convertCronExpression = (cron) => {
     require('cronstrue/locales/ko');
     const converted = cronstrue.toString(cron.value, { locale: 'ko' });
-    return converted;
+
+    return `${cron.value} (${converted})`;
   };
 
   return (
@@ -351,6 +355,7 @@ export const ScheduleFlow = () => {
         <Column
           dataField='cronExpr'
           caption='크론 표현식'
+          width='400px'
           customizeText={convertCronExpression}
         />
         <Column
