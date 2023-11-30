@@ -3,6 +3,7 @@ extend type Query {
     app(name: String): Application
     findAllApps: [ApplicationView]
     findAllByContainerName(name: String): [ApplicationView]
+    appStatus(name: String): [AppStatus]
 }
 
 extend type Mutation {
@@ -35,4 +36,9 @@ input ApplicationInput {
 type ApplicationPage {
     totalElements: Int
     content: [ApplicationView]
+}
+
+type AppStatus {
+    name: String
+    status: String
 }

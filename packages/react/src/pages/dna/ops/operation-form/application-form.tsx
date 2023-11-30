@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ValidationGroup from 'devextreme-react/validation-group';
 import Form, {
   ColCountByScreen,
@@ -11,14 +11,48 @@ import { FormTextbox } from '../../../../components';
 import './application-form.scss';
 import { apollo } from '../../../../graphql-apollo';
 import { gql } from '@apollo/client';
-import { custom } from 'devextreme/ui/dialog';
+import { confirm, custom } from 'devextreme/ui/dialog';
 import { OperationToolbarForm } from '../toolbar-form/operation-toolbar-form';
+import DataGrid, {
+  Column,
+  Scrolling,
+  Sorting,
+} from 'devextreme-react/data-grid';
 
 export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
   const [editing, setEditing] = useState(false);
+  const [appStatus, setAppStatus] = useState<any>();
+
+  useEffect(() => {
+    checkStatus(selectedItem);
+    const timer = setInterval(() => {
+      checkStatus(selectedItem);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [selectedItem]);
 
   const handleEditClick = () => {
     setEditing(!editing);
+  };
+
+  const checkStatus = (item) => {
+    apollo
+      .query({
+        query: gql`
+          query appStatus($name: String) {
+            appStatus(name: $name) {
+                name
+                status
+            }
+          }
+        `,
+        variables: {
+          name: item.name,
+        },
+      })
+      .then((result: any) => {
+        setAppStatus(result.data.appStatus);
+      });
   };
 
   const onSaveClick = ({ validationGroup }) => {
@@ -72,9 +106,53 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
     handleEditClick();
   };
 
+  const onDeleteClick = () => {
+    const result = confirm('해당 애플리케이션을 삭제하시겠습니까?', '애플리케이션 삭제');
+    result.then(dialogResult => {
+      if (dialogResult) {
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation deleteApp($name: String) {
+                deleteApp(name: $name) {
+                  id
+                  name
+                  container {
+                    id
+                    name
+                    type
+                    hostname
+                  }
+                  port
+                }
+              }
+            `,
+            variables: {
+              name: selectedItem.name,
+            },
+          })
+          .then(() => {
+            onSave && onSave();
+            setSelectedItem(null);
+          });
+      }
+    });
+  };
+
   const updateField = (field: string | number) => (value: string | number) => {
     setSelectedItem((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
+
+  const cellRender = useCallback((item) => {
+    return (
+      <>
+        {item.data.status === 'UP' ?
+          <i className='dx-icon-isnotblank' style={{ color: '#41b400' }}>운영중</i>
+          : <i className='dx-icon-isnotblank' style={{ color: '#cbc7b9' }}>정지됨</i>
+        }
+      </>
+    );
+  }, []);
 
   return (
     <div className='application-form'>
@@ -84,6 +162,7 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
           onSaveClick={onSaveClick}
           editing={editing}
           onCancelClick={onCancelClick}
+          onDeleteClick={onDeleteClick}
         />
         <Form
           className={classNames({
@@ -118,6 +197,17 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
                   isEditing={!editing}
                   onValueChange={updateField('port')}
                 />
+              </ItemForm>
+              <ItemForm>
+                <DataGrid
+                  dataSource={appStatus}
+                  showBorders
+                >
+                  <Sorting mode='none' />
+                  <Scrolling mode='virtual' />
+                  <Column dataField='name' caption='컨테이너' />
+                  <Column dataField='status' caption='상태' cellRender={cellRender} />
+                </DataGrid>
               </ItemForm>
             </GroupItem>
           </GroupItem>

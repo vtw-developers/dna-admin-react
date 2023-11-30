@@ -10,11 +10,13 @@ export const OperationToolbarForm = ({
   toggleEditing,
   onCancelClick,
   onSaveClick,
+  onDeleteClick
 }: {
   editing: boolean;
   toggleEditing: () => void;
   onCancelClick: () => void;
   onSaveClick: (e) => void;
+  onDeleteClick: () => void;
 }) => {
   return (
     <Toolbar className='toolbar-form'>
@@ -39,7 +41,20 @@ export const OperationToolbarForm = ({
         />
       </Item>
       <Item location='after' visible={editing}>
-        <Button text='취소' stylingMode='text' onClick={onCancelClick} />
+        <Button
+          text='취소'
+          stylingMode='text'
+          onClick={onCancelClick}
+        />
+      </Item>
+      <Item location='after' visible={!editing}>
+        <Button
+          text='삭제'
+          icon='minus'
+          stylingMode='outlined'
+          type='danger'
+          onClick={onDeleteClick}
+        />
       </Item>
     </Toolbar>
   );

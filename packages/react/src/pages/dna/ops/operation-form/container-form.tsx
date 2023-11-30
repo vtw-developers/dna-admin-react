@@ -20,6 +20,7 @@ import DataGrid, {
   Sorting,
 } from 'devextreme-react/data-grid';
 import Toolbar from 'devextreme-react/toolbar';
+import { confirm } from 'devextreme/ui/dialog';
 
 export const ContainerForm = ({ selectedItem, setSelectedItem, onSave }) => {
   const [editing, setEditing] = useState(false);
@@ -91,6 +92,32 @@ export const ContainerForm = ({ selectedItem, setSelectedItem, onSave }) => {
     handleEditClick();
   };
 
+  const onDeleteClick = () => {
+    const result = confirm('해당 컨테이너를 삭제하시겠습니까?', '컨테이너 삭제');
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        apollo
+          .mutate({
+            mutation: gql`
+              mutation deleteContainer($name: String) {
+                deleteContainer(name: $name)
+              }
+            `,
+            variables: {
+              name: selectedItem.name,
+            },
+          })
+          .then(() => {
+            onSave && onSave();
+            setSelectedItem(null);
+          })
+          .catch((result: any) => {
+            notify(result.graphQLErrors[0].message, 'error', 2500);
+          });
+      }
+    });
+  };
+
   const updateField = (field: string) => (value) => {
     setSelectedItem((prevState) => ({ ...prevState, ...{ [field]: value } }));
   };
@@ -104,6 +131,7 @@ export const ContainerForm = ({ selectedItem, setSelectedItem, onSave }) => {
             onSaveClick={onSaveClick}
             editing={editing}
             onCancelClick={onCancelClick}
+            onDeleteClick={onDeleteClick}
           />
           <Form
             className={classNames({
