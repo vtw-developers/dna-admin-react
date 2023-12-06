@@ -28,6 +28,7 @@ import { FlowManage } from './pages/dna/flow/flow-manage';
 import { DeployFlow } from './pages/dna/flow/deploy/deploy-flow';
 import { DatasourceManage } from './pages/dna/datasource/datasource-manage';
 import { ScheduleFlow } from './pages/dna/flow/schedule/schedule-flow';
+import { ScheduleHistory } from './pages/dna/flow/schedule-history/schedule-history';
 
 const routes = [
   {
@@ -137,6 +138,10 @@ const routes = [
   {
     path: '/schedule',
     element: ScheduleFlow,
+  },
+  {
+    path: '/schedule-history',
+    element: ScheduleHistory,
   },
 ];
 
