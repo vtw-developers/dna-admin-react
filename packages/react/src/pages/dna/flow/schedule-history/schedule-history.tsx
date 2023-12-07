@@ -37,39 +37,23 @@ export const ScheduleHistory = () => {
             const pageable = pageableService.getPageable(loadOptions);
             const page$ = apollo.query({
               query: gql`
-                query showScheduleHistories(
-                  $page: Int = 0
-                  $size: Int = 10
-                  $sortBy: String = "id"
-                  $sortDir: String = "asc"
-                  $filter: String = ""
-              ) {
-                showScheduleHistories(
-                    page: $page
-                    size: $size
-                    sortBy: $sortBy
-                    sortDir: $sortDir
-                    filter: $filter
-                ) {
-                    totalElements
-                    content {
-                        id
-                        appName
-                        flowName
-                        result
-                        errorMessage
-                        startTime
-                        endTime
-                    }
+                query showScheduleHistories($pagingInput: PagingInput) {
+                showScheduleHistories(pagingInput: $pagingInput) {
+                  totalElements
+                  content {
+                    id
+                    appName
+                    flowName
+                    result
+                    errorMessage
+                    startTime
+                    endTime
+                  }
                 }
               }
             `,
               variables: {
-                page: pageable.page || 0,
-                size: pageable.size,
-                sortBy: pageable.sortBy,
-                sortDir: pageable.sortDir,
-                filter: pageable.filter,
+                pagingInput: pageable
               }
             }).then((page: any) => {
               const historiesResult = page.data.showScheduleHistories;
@@ -150,13 +134,13 @@ export const ScheduleHistory = () => {
           showNavigationButtons
         />
         <Column dataField='appName' caption='어플리케이션'>
-          <HeaderFilter dataSource={appFilterData} />
+          <HeaderFilter dataSource={appFilterData} allowSelectAll={false} />
         </Column>
         <Column dataField='flowName' caption='플로우'>
-          <HeaderFilter dataSource={flowFilterData} />
+          <HeaderFilter dataSource={flowFilterData} allowSelectAll={false} />
         </Column>
         <Column dataField='result' caption='실행 결과'>
-          <HeaderFilter dataSource={resultFilterData} />
+          <HeaderFilter dataSource={resultFilterData} allowSelectAll={false} />
         </Column>
         <Column
           dataField='startTime'
