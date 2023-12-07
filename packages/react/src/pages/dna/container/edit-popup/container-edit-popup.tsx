@@ -87,7 +87,7 @@ export const ContainerEditPopup = ({
         .mutate({
           mutation: gql`
             mutation updateContainer($oldName: String, $newOne: ContainerRequest) {
-                updateContainer(oldName: $oldName, newOne: $newOne)
+              updateContainer(oldName: $oldName, newOne: $newOne)
             }
           `,
           variables: {

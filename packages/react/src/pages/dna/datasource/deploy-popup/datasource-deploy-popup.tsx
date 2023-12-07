@@ -56,11 +56,11 @@ export const DatasourceDeployPopup = ({
     apollo
       .query({
         query: gql`
-            query findAllApps {
-                findAllApps {
-                    name
-                }
+          query findAllApps {
+            findAllApps {
+                name
             }
+          }
         `,
       })
       .then((result: any) => {
@@ -72,18 +72,18 @@ export const DatasourceDeployPopup = ({
     apollo
       .query({
         query: gql`
-            query dataSources {
-                dataSources {
-                    id
-                    projectId
-                    databaseProduct
-                    name
-                    description
-                    url
-                    username
-                    password
-                }
+          query dataSources {
+            dataSources {
+              id
+              projectId
+              databaseProduct
+              name
+              description
+              url
+              username
+              password
             }
+          }
         `,
       })
       .then((result: any) => {
@@ -96,9 +96,9 @@ export const DatasourceDeployPopup = ({
     apollo
       .mutate({
         mutation: gql`
-            mutation deployDataSources($app: String, $dataSources: [String]) {
-                deployDataSources(app: $app, dataSources: $dataSources)
-            }
+          mutation deployDataSources($app: String, $dataSources: [String]) {
+            deployDataSources(app: $app, dataSources: $dataSources)
+          }
         `,
         variables: {
           app: deployData.app,

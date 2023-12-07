@@ -14,7 +14,7 @@ import { gql } from '@apollo/client';
 import { confirm, custom } from 'devextreme/ui/dialog';
 import { OperationToolbarForm } from '../toolbar-form/operation-toolbar-form';
 import DataGrid, {
-  Column,
+  Column, LoadPanel,
   Scrolling,
   Sorting,
 } from 'devextreme-react/data-grid';
@@ -41,8 +41,8 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
         query: gql`
           query appStatus($name: String) {
             appStatus(name: $name) {
-                name
-                status
+              name
+              status
             }
           }
         `,
@@ -205,6 +205,7 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
                 >
                   <Sorting mode='none' />
                   <Scrolling mode='virtual' />
+                  <LoadPanel enabled={false} />
                   <Column dataField='name' caption='컨테이너' />
                   <Column dataField='status' caption='상태' cellRender={cellRender} />
                 </DataGrid>
