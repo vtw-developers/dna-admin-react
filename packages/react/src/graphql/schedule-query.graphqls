@@ -1,6 +1,6 @@
 extend type Query {
     showSchedules: [ScheduleView]
-    showScheduleHistories(page: Int, size: Int, sortBy: String, sortDir: String, filter: String): ScheduleHistoryPage
+    showScheduleHistories(pagingInput: PagingInput): ScheduleHistoryPage
 }
 
 type ScheduleView {
@@ -25,4 +25,13 @@ type ScheduleHistory {
 type ScheduleHistoryPage {
     totalElements: Int
     content: [ScheduleHistory]
+}
+
+input PagingInput {
+    page: Int
+    size: Int
+    sortBy: String
+    sortDir: String
+    filter: String
+    filterValue: String
 }
