@@ -95,22 +95,19 @@ export const AppDeployedFlows = ({ selectedItem, reload }) => {
 
   const undeployFlowClick = useCallback(() => {
     const list = treeListRef.current?.instance.getSelectedRowsData('all');
-    const result = confirm(`선택한 플로우 ${list?.length}개를 배포 취소 하시겠습니까?`, '배포 취소');
+    const items: any = [];
+    list?.forEach((e) => {
+      if (e.flowName == 'General Flow') return;
+      const data = {
+        appName: e.appName,
+        flowName: e.flowName,
+        deployTime: e.deployTime,
+      };
+      items.push(data);
+    });
+    const result = confirm(`선택한 플로우 ${items?.length}개를 배포 취소 하시겠습니까?`, '배포 취소');
     result.then((dialogResult) => {
       if (dialogResult) {
-        const items: any = [];
-        list?.forEach((e) => {
-          if (e.flowName == 'General Flow') return;
-          const data = {
-            appName: e.appName,
-            flowName: e.flowName,
-            deployTime: e.deployTime,
-          };
-          items.push(data);
-        });
-        if (items?.length == 0) {
-          return;
-        }
         apollo
           .mutate({
             mutation: gql`

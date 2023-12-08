@@ -14,10 +14,13 @@ import { gql } from '@apollo/client';
 import { confirm, custom } from 'devextreme/ui/dialog';
 import { OperationToolbarForm } from '../toolbar-form/operation-toolbar-form';
 import DataGrid, {
-  Column, LoadPanel,
+  Column,
+  LoadPanel,
   Scrolling,
   Sorting,
 } from 'devextreme-react/data-grid';
+import Button from 'devextreme-react/button';
+import notify from 'devextreme/ui/notify';
 
 export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
   const [editing, setEditing] = useState(false);
@@ -154,6 +157,28 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
     );
   }, []);
 
+  const redeployFlows = () => {
+    apollo
+      .mutate({
+        mutation: gql`
+          mutation redeployFlows($app: String) {
+            redeployFlows(app: $app) {
+              name
+              status
+            }
+          }
+        `,
+        variables: {
+          app: selectedItem.name,
+        },
+      })
+      .then((result: any) => {
+        const succeeded = result.data.redeployFlows.filter(e => e.status === 'Succeeded').map(item => item.name);
+        const failed = result.data.redeployFlows.filter(e => e.status === 'Failed').map(item => item.name);
+        notify(`배포 성공: ${succeeded} / 배포 실패: ${failed}`, 'success', 5000);
+      });
+  };
+
   return (
     <div className='application-form'>
       <ValidationGroup>
@@ -174,6 +199,16 @@ export const ApplicationForm = ({ selectedItem, setSelectedItem, onSave }) => {
           <GroupItem colCount={1}>
             <ColCountByScreen xs={2} />
             <GroupItem>
+              <ItemForm>
+                <Button
+                  text='재배포'
+                  icon='refresh'
+                  stylingMode='outlined'
+                  type='normal'
+                  style={{ float: 'right' }}
+                  onClick={redeployFlows}
+                />
+              </ItemForm>
               <ItemForm>
                 <FormTextbox
                   label='애플리케이션 이름'

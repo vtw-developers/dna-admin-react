@@ -59,7 +59,6 @@ export const ContainerAppEditPopup = ({
   };
 
   const save = useCallback(() => {
-    console.log(app);
     if (type == '생성') {
       apollo
         .mutate({
