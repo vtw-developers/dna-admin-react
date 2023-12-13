@@ -4,6 +4,7 @@ extend type Mutation {
     deployProject(app: String, project: String): String
     deployFlows(app: String, flows: [String]): String
     undeployFlows(flows: [deployFlowInput]): String
+    redeployFlows(app: String): [AppStatus]
 }
 
 input deployFlowInput {
