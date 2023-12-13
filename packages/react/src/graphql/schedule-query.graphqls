@@ -1,6 +1,6 @@
 extend type Query {
     showSchedules: [ScheduleView]
-    showScheduleHistories(pagingInput: PagingInput): ScheduleHistoryPage
+    showScheduleHistories(filter: ScheduleHistoryFilter, pagingInput: PagingInput): ScheduleHistoryPage
 }
 
 type ScheduleView {
@@ -32,6 +32,11 @@ input PagingInput {
     size: Int
     sortBy: String
     sortDir: String
-    filter: String
-    filterValue: String
+}
+
+input ScheduleHistoryFilter {
+    appName: String
+    flowName: String
+    result: String
+    dateRange: String
 }

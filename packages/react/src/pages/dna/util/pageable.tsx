@@ -3,8 +3,7 @@ export interface Pageable {
   size: number;
   sortBy?: string;
   sortDir?: 'asc' | 'desc';
-  filter?: string;
-  filterValue?: string;
+  filter?: any;
 }
 
 export interface Page<T> {
@@ -19,7 +18,6 @@ export class PageableService {
     const size = loadOptions.take;
     const page = loadOptions.skip! / loadOptions.take!;
     const sorts = loadOptions.sort as Array<any>;
-    const filter = loadOptions.filter;
 
     const params = { page, size } as Pageable;
 
@@ -30,14 +28,6 @@ export class PageableService {
 
       params.sortBy = sortBy;
       params.sortDir = sortDir;
-    }
-
-    if (filter) {
-      const filterName = filter[0];
-      const filterValue = filter.filterValue;
-
-      params.filter = filterName;
-      params.filterValue = filterValue;
     }
     return params;
   }

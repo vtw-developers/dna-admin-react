@@ -1,32 +1,66 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataGrid, {
   HeaderFilter,
-  LoadPanel, Pager, Scrolling, Selection, Sorting
+  LoadPanel,
+  Pager,
+  Scrolling,
+  Selection,
+  Sorting,
 } from 'devextreme-react/data-grid';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
-import { apollo } from '../../../../graphql-apollo';
-import { gql } from '@apollo/client';
 import './schedule-history.scss';
 import { Column } from 'devextreme-react/gantt';
 import { PageableService } from '../../util/pageable';
 import DataSource from 'devextreme/data/data_source';
+import Form, { EmptyItem, GroupItem } from 'devextreme-react/form';
+import TextBox from 'devextreme-react/text-box';
+import SelectBox from 'devextreme-react/select-box';
+import { Button } from 'devextreme-react/button';
+import { DateRangeBox } from 'devextreme-react';
 import CustomStore from 'devextreme/data/custom_store';
-import ArrayStore from 'devextreme/data/array_store';
+import { apollo } from '../../../../graphql-apollo';
+import { gql } from '@apollo/client';
 
 const pageableService = new PageableService();
 export const ScheduleHistory = () => {
   const historiesRef = useRef<any>();
   const [historiesDatasource, setHistoriesDatasource] = useState<DataSource>();
-  const [appFilterData, setAppFilterData] = useState<any>();
-  const [flowFilterData, setFlowFilterData] = useState<any>();
-  const [resultFilterData, setResultFilterData] = useState<any>();
+  const [filterData, setFilterData] = useState<any>();
 
+  const updateField = (field: string) => (value) => {
+    if (field === 'dateRange' && (value.value[0] !== null && value.value[1] !== null)) {
+      const startDate = setDateRange(value.value[0]);
+      const endDate = setDateRange(value.value[1]);
+      setFilterData((prevState) => ({ ...prevState, ...{ [field]: `${startDate},${endDate}` } }));
+      return;
+    } else if (field === 'dateRange' && !(value.value[0] !== null && value.value[1] !== null)) {
+      setFilterData((prevState) => ({ ...prevState, ...{ [field]: '' } }));
+      return;
+    }
+    setFilterData((prevState) => ({ ...prevState, ...{ [field]: value.value } }));
+  };
+
+  const setDateRange = useCallback((data) => {
+    const year = data.getFullYear();
+    let month = data.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
+    let day = data.getDate();
+    day = day < 10 ? `0${day}` : day;
+    const date = `${year}-${month}-${day}`;
+    return date;
+  }, []);
+
+  const interval = useRef<any>();
   useEffect(() => {
     reloadScheduleHistories();
-    setInterval(() => {
+    interval.current = setInterval(() => {
+      setFilterData((prevState) => ({ ...prevState }));
       reloadScheduleHistories();
     }, 5000);
-  }, []);
+    return () => {
+      clearInterval(interval.current);
+    };
+  }, [filterData]);
 
   const reloadScheduleHistories = useCallback(() => {
     setHistoriesDatasource(
@@ -35,62 +69,50 @@ export const ScheduleHistory = () => {
           key: 'id',
           load: (loadOptions) => {
             const pageable = pageableService.getPageable(loadOptions);
-            const page$ = apollo.query({
-              query: gql`
-                query showScheduleHistories($pagingInput: PagingInput) {
-                showScheduleHistories(pagingInput: $pagingInput) {
-                  totalElements
-                  content {
-                    id
-                    appName
-                    flowName
-                    result
-                    errorMessage
-                    startTime
-                    endTime
+            const page$ = apollo
+              .query({
+                query: gql`
+                  query showScheduleHistories(
+                    $filter: ScheduleHistoryFilter
+                    $pagingInput: PagingInput
+                  ) {
+                    showScheduleHistories(
+                      filter: $filter
+                      pagingInput: $pagingInput
+                    ) {
+                      totalElements
+                      content {
+                        id
+                        appName
+                        flowName
+                        result
+                        errorMessage
+                        startTime
+                        endTime
+                      }
+                    }
                   }
-                }
-              }
-            `,
-              variables: {
-                pagingInput: pageable
-              }
-            }).then((page: any) => {
-              const historiesResult = page.data.showScheduleHistories;
-
-              const appFilterItems = historiesResult.content?.map(item => item.appName);
-              const flowFilterItems = historiesResult.content?.map(item => item.flowName);
-              const resultFilterItems = historiesResult.content?.map(item => item.result);
-              setAppFilterData(loadFilter(appFilterItems));
-              setFlowFilterData(loadFilter(flowFilterItems));
-              setResultFilterData(loadFilter(resultFilterItems));
-
-              return pageableService.transformPage(historiesResult);
-            });
+                `,
+                variables: {
+                  filter: filterData,
+                  pagingInput: pageable
+                },
+              })
+              .then((page: any) => {
+                const historiesResult = page.data.showScheduleHistories;
+                return pageableService.transformPage(historiesResult);
+              });
             return page$;
           },
         }),
       })
     );
-  }, []);
-
-  const loadFilter = useCallback((items) => {
-    items = items?.filter((value, index, self) => self.indexOf(value) === index);
-    const filterData = {
-      store: new ArrayStore({ data: items }),
-      map: (item) => {
-        return {
-          text: item,
-          value: item
-        };
-      },
-    };
-    return filterData;
-  }, []);
+  }, [filterData]);
 
   const customizeDatetime = useCallback((data) => {
     const year = data.value.getFullYear();
-    const month = data.value.getMonth() + 1;
+    let month = data.value.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
     let day = data.value.getDate();
     day = day < 10 ? `0${day}` : day;
     const date = `${year}-${month}-${day}`;
@@ -114,12 +136,51 @@ export const ScheduleHistory = () => {
           <span className='toolbar-header'>스케줄 이력</span>
         </Item>
       </Toolbar>
+      <Form formData={filterData} style={{ paddingBottom: '20px' }}>
+        <GroupItem colCount={6}>
+          <Item>
+            <TextBox
+              label='어플리케이션명'
+              onValueChanged={updateField('appName')}
+            />
+          </Item>
+          <Item>
+            <TextBox
+              label='플로우명'
+              onValueChanged={updateField('flowName')}
+            />
+          </Item>
+          <Item>
+            <SelectBox
+              label='실행 결과'
+              items={['SUCCESS', 'FAIL']}
+              onValueChanged={updateField('result')}
+            />
+          </Item>
+          <Item>
+            <DateRangeBox
+              displayFormat='yyyy-MM-dd'
+              showClearButton
+              onValueChanged={updateField('dateRange')}
+              width='25vw'
+            />
+          </Item>
+          <EmptyItem colSpan={1} />
+          <Item>
+            <Button
+              text='Search'
+              onClick={reloadScheduleHistories}
+              width='120px'
+            />
+          </Item>
+        </GroupItem>
+      </Form>
       <DataGrid
         dataSource={historiesDatasource}
         allowColumnResizing
         showBorders
         ref={historiesRef}
-        style={{ maxHeight: '700px' }}
+        style={{ maxHeight: '650px' }}
         remoteOperations
       >
         <LoadPanel showPane={false} showIndicator={false} />
@@ -133,15 +194,22 @@ export const ScheduleHistory = () => {
           showPageSizeSelector
           showNavigationButtons
         />
-        <Column dataField='appName' caption='어플리케이션'>
-          <HeaderFilter dataSource={appFilterData} allowSelectAll={false} />
-        </Column>
-        <Column dataField='flowName' caption='플로우'>
-          <HeaderFilter dataSource={flowFilterData} allowSelectAll={false} />
-        </Column>
-        <Column dataField='result' caption='실행 결과'>
-          <HeaderFilter dataSource={resultFilterData} allowSelectAll={false} />
-        </Column>
+        <Column
+          dataField='appName'
+          caption='어플리케이션'
+          allowHeaderFiltering={false}
+        />
+        <Column
+          dataField='flowName'
+          caption='플로우'
+          allowHeaderFiltering={false}
+        />
+        <Column
+          dataField='result'
+          caption='실행 결과'
+          allowHeaderFiltering={false}
+          allowSorting={false}
+        />
         <Column
           dataField='startTime'
           caption='실행 시작 시간'
@@ -161,6 +229,7 @@ export const ScheduleHistory = () => {
           dataField='errorMessage'
           caption='에러메시지'
           allowHeaderFiltering={false}
+          allowSorting={false}
         />
       </DataGrid>
     </div>
